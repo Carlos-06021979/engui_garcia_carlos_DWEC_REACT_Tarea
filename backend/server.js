@@ -60,7 +60,13 @@ async function fetchFromAemet(endpoint) {
       throw new Error(`Error AEMET Paso 2: ${response2.statusText}`);
     }
 
-    return await response2.json();
+    // AEMET sometimes uses ISO-8859-1 (Latin1) and fetch.json() might fail or produce garbage UTF-8
+    const arrayBuffer = await response2.arrayBuffer();
+    const decoder = new TextDecoder("iso-8859-1"); // Force decoding as Latin1
+    const text = decoder.decode(arrayBuffer);
+
+    // Parse JSON manually from the decoded text
+    return JSON.parse(text);
   } catch (error) {
     console.error("❌ Error en fetchFromAemet:", error.message);
     throw error; // Lanzamos el error para manejarlo en la ruta
@@ -116,12 +122,10 @@ app.get("/api/prediccion/:cod", async (req, res) => {
 
     res.json({ success: true, datos: prediccion });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "Error al obtener predicción: " + error.message,
-      });
+    res.status(500).json({
+      success: false,
+      error: "Error al obtener predicción: " + error.message,
+    });
   }
 });
 
@@ -141,12 +145,10 @@ app.get("/api/prediccion-horas/:cod", async (req, res) => {
 
     res.json({ success: true, datos: prediccion });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        error: "Error al obtener predicción por horas: " + error.message,
-      });
+    res.status(500).json({
+      success: false,
+      error: "Error al obtener predicción por horas: " + error.message,
+    });
   }
 });
 

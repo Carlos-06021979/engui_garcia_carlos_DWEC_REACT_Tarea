@@ -27,12 +27,19 @@ export const Header = () => {
           </button>
 
           {/* Theme Toggle */}
+          {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-yellow-500 dark:text-blue-400"
-            title="Toggle Theme"
+            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-yellow-400"
+            title={
+              theme === "light" ? "Activar Modo Oscuro" : "Activar Modo Claro"
+            }
           >
-            {theme === "light" ? <Moon size={24} /> : <Sun size={24} />}
+            {theme === "light" ? (
+              <Moon size={24} className="fill-slate-600" />
+            ) : (
+              <Sun size={24} className="fill-yellow-400" />
+            )}
           </button>
         </div>
       </div>
