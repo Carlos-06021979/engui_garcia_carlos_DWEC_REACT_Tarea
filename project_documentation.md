@@ -77,7 +77,8 @@ Durante el desarrollo, nos hemos enfrentado a varios retos técnicos interesante
 
 ### C. Inconsistencias en Nombres de Municipios
 
-- **Solución**: Se ha mejorado la lógica de búsqueda normalizando el texto (quitando acentos y signos de puntuación). Además, **se ha implementado la búsqueda por Provincia y por Código Postal**, permitiendo al usuario encontrar "Murcia" o "30030" directamente.
+- **Solución**: Se ha mejorado la lógica de búsqueda normalizando el texto (quitando acentos y signos de puntuación). Además, **se ha implementado la búsqueda por Provincia y por Código de Municipio (INE)**.
+  > **Nota**: El sistema utiliza el código oficial del municipio (INE) que proporciona AEMET (ej: 30030 para Murcia), el cual puede coincidir o no con el Código Postal (30001).
 
 ### D. Visualización de Datos Horarios
 
