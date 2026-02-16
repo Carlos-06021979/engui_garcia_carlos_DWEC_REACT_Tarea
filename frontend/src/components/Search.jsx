@@ -3,7 +3,7 @@ import { Search as SearchIcon, X, Loader2, MapPin, Clock } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import { getMunicipalities } from "../services/api";
 
-export const Search = ({ onSelect }) => {
+export const Search = ({ onSelect, onSearchChange }) => {
   const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [municipalities, setMunicipalities] = useState([]);
@@ -97,7 +97,10 @@ export const Search = ({ onSelect }) => {
   const handleInputChange = (e) => {
     const val = e.target.value;
     setQuery(val);
-    setIsOpen(true); // Always open to show history or results
+    setIsOpen(true);
+
+    // Clear global errors if typing
+    if (onSearchChange) onSearchChange();
 
     if (val === "") {
       onSelect(null);
@@ -207,10 +210,10 @@ export const Search = ({ onSelect }) => {
                     <MapPin size={16} />
                   </span>
                   <div>
-                    <span className="font-medium block text-slate-900 dark:text-white">
+                    <span className="font-bold text-lg block text-slate-900 dark:text-white">
                       {municipio.nombre}
                     </span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                    <span className="text-sm text-slate-500 dark:text-slate-400">
                       {municipio.provincia}
                     </span>
                   </div>
