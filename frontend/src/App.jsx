@@ -19,25 +19,21 @@ function App() {
   const handleSelection = async (municipality) => {
     console.log("Municipio seleccionado:", municipality);
     setSelectedMunicipality(municipality);
-    setLoading(true);
     setError(null);
     setWeatherData(null);
     setHourlyData(null);
 
+    // If no municipality selected (cleared), stop here
+    if (!municipality) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+
     try {
       // Clean ID (remove 'id' prefix if present)
       const code = municipality.id.replace("id", "");
-
-      // Parallel fetch for standard and hourly forecast
-      // We need to fetch the hourly endpoint.
-      // Assuming getWeatherPrediction is generic or we call the endpoint directly here for now using basic fetch or helper
-      // Let's assume we use the getPrediction helper but for a different route, or create a new helper.
-      // Since I can't easily edit api.js right here without another step, I'll fetch normally or assume api.js controls it.
-      // Actually, looking at previous context, api.js might not have hourly. I should add it.
-
-      // Let's do a quick direct fetch here or better, update api.js in next step.
-      // For this step I will assume a new function fetchHourly exists or use a direct fetch pattern if allowed.
-      // Better: I will use the existing getWeatherPrediction for daily, and add a fetch for hourly.
 
       const response = await getWeatherPrediction(code);
       // We also need hourly. Let's fetch it from our backend.
