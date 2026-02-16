@@ -78,24 +78,24 @@ Durante el desarrollo, nos hemos enfrentado a varios retos técnicos interesante
 ### C. Inconsistencias en Nombres de Municipios
 
 - **Solución**: Se ha mejorado la lógica de búsqueda normalizando el texto (quitando acentos y signos de puntuación). Además, **se ha implementado la búsqueda por Provincia y por Código de Municipio (INE)**.
-  > **Nota**: El sistema utiliza el código oficial del municipio (INE) que proporciona AEMET (ej: 30030 para Murcia), el cual puede identificarse en la herramienta.
-
-### E. Mejoras Visuales y Accesibilidad
-
-- **Fondo Dinámico**: Se ha implementado un sistema de fondos aleatorios de paisajes de ciudades de España (vía LoremFlickr) que mejora la apariencia visual.
-- **Accesibilidad**: Se han revisado los contrastes y se han añadido etiquetas ARIA en los iconos.
-- **Feedback**: El sistema de gestión de errores ahora es más reactivo, limpiando los mensajes en cuanto el usuario interactúa con el buscador.
+  > **Nota**: Dado que la API de AEMET no devuelve siempre el nombre de la provincia, hemos implementado un mapeo manual en el backend (`server.js`) que asocia los códigos INE (01-52) con sus respectivas provincias, garantizando que siempre se muestre el dato correcto (ej: `Murcia (Murcia)`).
 
 ### D. Visualización de Datos Horarios
 
 - **Problema**: Mostrar todas las horas del día a veces saturaba al usuario.
 - **Solución**: Se ha implementado un componente `HourlyForecast` con scroll horizontal y filtrado de horas pasadas.
 
-### E. Experiencia de Usuario (Mejoras Visuales)
+### E. Gestión de Errores y Robustez
 
-- **Fondos Dinámicos**: Se ha integrado una imagen de fondo que cambia según el municipio seleccionado (usando la API de Unsplash), aportando un toque visual único.
+- **Problema**: El usuario no distinguía entre un error de la API y una caída de internet.
+- **Solución**: Hemos implementado una detección específica de `NetworkError` en el frontend (`App.jsx`). Si la conexión falla, se muestra un mensaje claro: _"No se pudo conectar con el servidor. Revisa tu conexión a internet"_, diferenciándolo de otros errores de datos.
+
+### F. Experiencia de Usuario (Mejoras Visuales)
+
+- **Fondos Dinámicos**: Se ha integrado una imagen de fondo que cambia de forma aleatoria (vía LoremFlickr), aportando un toque visual único.
 - **Accesibilidad**: Se han añadido `tooltips` en todos los iconos y etiquetas `aria-label` para mejorar la accesibilidad de la aplicación.
 - **Histórico de Búsquedas**: Se guardan las últimas 5 búsquedas en el `localStorage` para facilitar el acceso rápido a los municipios frecuentes.
+- **Feedback Instantáneo**: El sistema de gestión de errores es reactivo, limpiando los mensajes en cuanto el usuario interactúa con el buscador.
 
 ## 5. Conclusiones
 
