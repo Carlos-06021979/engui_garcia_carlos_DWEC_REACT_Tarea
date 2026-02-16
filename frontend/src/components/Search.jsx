@@ -216,11 +216,9 @@ export const Search = ({ onSelect, onSearchChange }) => {
                     <MapPin size={16} />
                   </span>
                   <div>
-                    <span className="font-bold text-lg block text-slate-900 dark:text-white">
-                      {municipio.nombre}
-                    </span>
-                    <span className="text-sm text-slate-500 dark:text-slate-400">
-                      Provincia: {municipio.provincia}
+                    <span className="text-lg block text-slate-900 dark:text-white">
+                      {municipio.nombre}{" "}
+                      <span className="font-bold">({municipio.provincia})</span>
                     </span>
                   </div>
                 </div>
