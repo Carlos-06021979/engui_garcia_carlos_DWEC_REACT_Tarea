@@ -41,11 +41,36 @@ export const WeatherCard = ({ data, municipality }) => {
     }
   };
 
-  const fullDate = new Date().toLocaleDateString("es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
+  // Custom date formatter to match user request (Capitalized, with Year)
+  const formatDate = () => {
+    const d = new Date();
+    const days = [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+    ];
+    const months = [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre",
+    ];
+    return `${days[d.getDay()]}, ${d.getDate()} de ${months[d.getMonth()]} de ${d.getFullYear()}`;
+  };
+
+  const fullDate = formatDate();
 
   return (
     <div className="w-full max-w-4xl mx-auto animate-fade-in">
@@ -53,23 +78,26 @@ export const WeatherCard = ({ data, municipality }) => {
       <div className="w-full max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-700 transition-all duration-300 transform hover:scale-[1.01] relative">
         {/* Background Image Layer */}
         <div
-          className="absolute inset-0 z-0 opacity-40 dark:opacity-30 bg-cover bg-center transition-opacity duration-1000"
+          className="absolute inset-0 z-0 opacity-60 dark:opacity-40 bg-cover bg-center transition-opacity duration-1000"
           style={{
-            backgroundImage: `url('https://loremflickr.com/1600/900/city,spain,landscape/all')`,
+            // Try to find specific city image, fallback to spain/landscape
+            backgroundImage: `url('https://loremflickr.com/1600/900/${municipality.nombre},spain,landscape/all')`,
           }}
         />
+        {/* Gradient Overlay for better text contrast */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-white/30 dark:from-slate-900/90 dark:via-slate-900/70 dark:to-slate-900/30 z-0 pointer-events-none" />
 
         {/* Content Layer */}
         <div className="p-8 relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+              <h2 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3 drop-shadow-sm">
                 {municipality.nombre}
-                <span className="text-sm font-normal text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full">
+                <span className="text-sm font-normal text-slate-600 dark:text-slate-300 bg-white/50 dark:bg-slate-700/50 backdrop-blur-md px-3 py-1 rounded-full border border-slate-200 dark:border-slate-600">
                   {municipality.provincia}
                 </span>
               </h2>
-              <p className="text-slate-500 dark:text-slate-400 mt-2 capitalize">
+              <p className="text-slate-700 dark:text-slate-200 mt-2 font-medium">
                 {fullDate}
               </p>
             </div>
