@@ -220,7 +220,7 @@ export const Search = ({ onSelect, onSearchChange }) => {
                       {municipio.nombre}
                     </span>
                     <span className="text-sm text-slate-500 dark:text-slate-400">
-                      {municipio.provincia}
+                      Provincia: {municipio.provincia}
                     </span>
                   </div>
                 </div>
