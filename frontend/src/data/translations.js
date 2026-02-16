@@ -1,7 +1,7 @@
 export const translations = {
   es: {
     title: "El Tiempo en España",
-    search_placeholder: "Buscar municipio, provincia o código...",
+    search_placeholder: "Buscar municipio, provincia o código INE...",
     loading: "Cargando...",
     error: "Ha ocurrido un error",
     humidity: "Humedad",
