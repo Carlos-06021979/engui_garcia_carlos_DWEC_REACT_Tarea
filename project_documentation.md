@@ -29,7 +29,7 @@ He hecho un uso extensivo de los Hooks de React para gestionar el ciclo de vida 
 
 1.  **`useState`**: Para gestionar estados locales como la query del buscador, los datos del tiempo cargados, el estado de carga (loading) y errores.
 2.  **`useEffect`**: Fundamental para operaciones con efectos secundarios, como llamar a la API cuando cambia el municipio seleccionado o filtrar la lista de búsqueda cuando el usuario escribe.
-3.  **`useContext`**: Para consumir los contextos globales de Tema y Idioma en cualquier componente sin prop-drilling.
+3.  **`useContext`**: Para consumir los contextos globales de Tema e Idioma en cualquier componente sin prop-drilling.
 4.  **`useMemo`** (implícito en optimizaciones): Para evitar recálculos innecesarios en listas grandes.
 
 Esto me ha permitido aplicar el patrón "Provider", donde un componente padre envuelve a toda la aplicación y provee el estado del idioma o del tema a cualquier componente hijo que lo necesite, evitando tener que pasar "props" manualmente por todos los niveles (prop drilling).

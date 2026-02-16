@@ -53,7 +53,16 @@ function App() {
       }
     } catch (err) {
       console.error(err);
-      setError("Error al cargar la predicción. Inténtalo de nuevo.");
+      if (
+        err.message.includes("Failed to fetch") ||
+        err.message.includes("NetworkError")
+      ) {
+        setError(
+          "No se pudo conectar con el servidor. Revisa tu conexión a internet o si el backend está encendido.",
+        );
+      } else {
+        setError("Error al cargar la predicción. Inténtalo de nuevo.");
+      }
     } finally {
       setLoading(false);
     }
