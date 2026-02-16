@@ -78,7 +78,13 @@ Durante el desarrollo, nos hemos enfrentado a varios retos técnicos interesante
 ### C. Inconsistencias en Nombres de Municipios
 
 - **Solución**: Se ha mejorado la lógica de búsqueda normalizando el texto (quitando acentos y signos de puntuación). Además, **se ha implementado la búsqueda por Provincia y por Código de Municipio (INE)**.
-  > **Nota**: El sistema utiliza el código oficial del municipio (INE) que proporciona AEMET (ej: 30030 para Murcia), el cual puede coincidir o no con el Código Postal (30001).
+  > **Nota**: El sistema utiliza el código oficial del municipio (INE) que proporciona AEMET (ej: 30030 para Murcia), el cual puede identificarse en la herramienta.
+
+### E. Mejoras Visuales y Accesibilidad
+
+- **Fondo Dinámico**: Se ha implementado un sistema de fondos aleatorios de paisajes de ciudades de España (vía LoremFlickr) que mejora la apariencia visual.
+- **Accesibilidad**: Se han revisado los contrastes y se han añadido etiquetas ARIA en los iconos.
+- **Feedback**: El sistema de gestión de errores ahora es más reactivo, limpiando los mensajes en cuanto el usuario interactúa con el buscador.
 
 ### D. Visualización de Datos Horarios
 
