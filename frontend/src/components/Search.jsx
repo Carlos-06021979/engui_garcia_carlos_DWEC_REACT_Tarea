@@ -71,11 +71,17 @@ export const Search = ({ onSelect, onSearchChange }) => {
         const normA = normalize(a.nombre);
         const normB = normalize(b.nombre);
 
-        // Exact match first
+        // Exact match first (Name)
         if (normA === normalizedQuery && normB !== normalizedQuery) return -1;
         if (normB === normalizedQuery && normA !== normalizedQuery) return 1;
 
-        // Starts with query second
+        // Exact Province match second (e.g. searching 'Murcia' shows Cartagena)
+        const provA = normalize(a.provincia || "");
+        const provB = normalize(b.provincia || "");
+        if (provA === normalizedQuery && provB !== normalizedQuery) return -1;
+        if (provB === normalizedQuery && provA !== normalizedQuery) return 1;
+
+        // Starts with query third
         if (
           normA.startsWith(normalizedQuery) &&
           !normB.startsWith(normalizedQuery)
