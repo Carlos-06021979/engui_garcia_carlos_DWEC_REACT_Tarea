@@ -74,7 +74,10 @@ function App() {
           </h2>
 
           <div className="mb-8 max-w-md mx-auto">
-            <Search onSelect={handleSelection} />
+            <Search
+              onSelect={handleSelection}
+              onSearchChange={() => setError(null)}
+            />
           </div>
 
           {!selectedMunicipality && !loading && (
