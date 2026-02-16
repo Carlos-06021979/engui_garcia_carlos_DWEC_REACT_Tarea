@@ -53,7 +53,7 @@ export const WeatherCard = ({ data, municipality }) => {
       <div className="w-full max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-700 transition-all duration-300 transform hover:scale-[1.01] relative">
         {/* Background Image Layer */}
         <div
-          className="absolute inset-0 z-0 opacity-20 dark:opacity-10 bg-cover bg-center transition-opacity duration-1000"
+          className="absolute inset-0 z-0 opacity-40 dark:opacity-30 bg-cover bg-center transition-opacity duration-1000"
           style={{
             backgroundImage: `url('https://loremflickr.com/1600/900/city,spain,landscape/all')`,
           }}
