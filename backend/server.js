@@ -17,10 +17,6 @@ const API_KEY = process.env.AEMET_API_KEY; // Leemos la clave de la API de AEMET
 app.use(cors()); // Habilitar CORS para que React (puerto 5173) pueda hablar con este Backend (puerto 3000)
 app.use(express.json()); // Habilitar el parseo de datos JSON en las peticiones
 
-// ==========================================
-// FUNCIONES AUXILIARES
-// ==========================================
-
 /*
  Función genérica para obtener datos de la API de AEMET.
  La API de AEMET funciona en dos pasos:
@@ -32,132 +28,87 @@ async function fetchFromAemet(endpoint) {
     // Paso 1: Solicitar URL de datos
     // Añadimos la api_key como query parameter (?api_key=...)
     const urlSolicitud = `https://opendata.aemet.es/opendata/api${endpoint}?api_key=${API_KEY}`;
+
+    // Para verlo en la consola si hubiera algún error ver la solicitud realizada
     console.log(`📡 Consultando AEMET: ${urlSolicitud}`);
 
+    // Hacemos la petición a la API de AEMET
     const response1 = await fetch(urlSolicitud, {
-      method: "GET",
-      headers: { "cache-control": "no-cache" },
+      method: "GET", // Método GET
+      headers: { "cache-control": "no-cache" }, // Evitamos que el navegador cachee la respuesta
     });
 
-    if (!response1.ok) {
+    // Si la petición no es correcta, lanzamos un error
+    if (!response1.ok)
       throw new Error(`Error AEMET Paso 1: ${response1.statusText}`);
-    }
 
-    const data1 = await response1.json();
+    const data1 = await response1.json(); // Parseamos la respuesta a JSON
 
-    // Verificamos si AEMET nos ha devuelto un error en el JSON
-    if (data1.estado === 401 || data1.estado === 403) {
+    // Si AEMET nos ha devuelto un error (401 o 403) en el JSON
+    if (data1.estado === 401 || data1.estado === 403)
       throw new Error("API Key inválida o acceso denegado por AEMET");
-    }
 
-    if (!data1.datos) {
-      throw new Error(
+    // Si AEMET no nos ha devuelto la URL de los datos
+    if (!data1.datos)
+      throw new Error( // Lanzamos un error con el mensaje de AEMET
         "AEMET no devolvió la URL de los datos: " + JSON.stringify(data1),
       );
-    }
 
     // Paso 2: Obtener los datos reales desde la URL proporcionada
-    const datosUrl = data1.datos;
-    console.log(`🔗 Descargando datos desde: ${datosUrl}`);
+    const datosUrl = data1.datos; // Obtenemos la URL de los datos
 
-    const response2 = await fetch(datosUrl);
-    if (!response2.ok) {
-      throw new Error(`Error AEMET Paso 2: ${response2.statusText}`);
-    }
+    console.log(`🔗 Descargando datos desde: ${datosUrl}`); // Mostramos la URL de los datos por consola
 
-    // AEMET sometimes uses ISO-8859-1 (Latin1) and fetch.json() might fail or produce garbage UTF-8
-    const arrayBuffer = await response2.arrayBuffer();
-    /*
-    AEMET a veces envía los datos con una codificación antigua (Latin1) y que, de no hacerlo así, 
-    los acentos y las "ñ" de los municipios saldrían con símbolos raros.
-    */
-    const decoder = new TextDecoder("iso-8859-1");
-    const text = decoder.decode(arrayBuffer);
+    const response2 = await fetch(datosUrl); // Hacemos la petición a la URL de los datos
 
-    // Parse JSON manually from the decoded text
+    // Si la petición no es correcta (distinta de 200), lanzamos un error
+    if (!response2.ok)
+      throw new Error(`Error AEMET Paso 2: ${response2.statusText}`); // Lanzamos un error con el mensaje de AEMET
+
+    // La API de la AEMET es antigua y a veces envía los datos con una codificación antigua (ISO-8859-1 (Latin1)) que no es UTF-8 por lo que no se pueden mostrar correctamente los acentos y las "ñ" de los municipios
+    const arrayBuffer = await response2.arrayBuffer(); // Convertimos la respuesta a un array de bytes crudos
+
+    const decoder = new TextDecoder("iso-8859-1"); // Decodificamos el array de bytes crudos con la codificación ISO-8859-1
+
+    const text = decoder.decode(arrayBuffer); // Convertimos el array de bytes crudos a texto
+
+    // Parseamos el texto a JSON
     return JSON.parse(text);
+
+    // Capturamos cualquier error que pueda ocurrir
   } catch (error) {
+    // Mostramos el error por consola
     console.error("❌ Error en fetchFromAemet:", error.message);
+
     throw error; // Lanzamos el error para manejarlo en la ruta
   }
 }
 
-// ==========================================
 // RUTAS DE LA API (ENDPOINTS)
-// ==========================================
 
-// Ruta de prueba
+// Ruta de prueba (checkeo de funcionamiento a la ruta raíz - http://localhost:3000/ desde el navegador)
 app.get("/", (req, res) => {
   res.json({ mensaje: "Servidor Backend AEMET funcionando 🚀", estado: "OK" });
 });
 
-/**
- * Endpoint para obtener la lista de TODOS los municipios.
- * Útil para el buscador del frontend.
- * Ruta AEMET: /maestro/municipios
+/*
+ Endpoint para obtener la lista de TODOS los municipios.
+ Para el buscador del frontend.
+ Ruta AEMET: /maestro/municipios
  */
 app.get("/api/municipios", async (req, res) => {
   try {
     // Pedimos la lista maestra de municipios
     const municipios = await fetchFromAemet("/maestro/municipios");
 
-    // Simplificamos los datos para enviarlos al frontend
-    // Solo necesitamos nombre y código (id)
-    // Mapa de códigos de provincia
-    const codigosProvincia = {
-      "01": "Álava/Araba",
-      "02": "Albacete",
-      "03": "Alicante/Alacant",
-      "04": "Almería",
-      "05": "Ávila",
-      "06": "Badajoz",
-      "07": "Illes Balears",
-      "08": "Barcelona",
-      "09": "Burgos",
-      10: "Cáceres",
-      11: "Cádiz",
-      12: "Castellón/Castelló",
-      13: "Ciudad Real",
-      14: "Córdoba",
-      15: "A Coruña",
-      16: "Cuenca",
-      17: "Girona",
-      18: "Granada",
-      19: "Guadalajara",
-      20: "Gipuzkoa",
-      21: "Huelva",
-      22: "Huesca",
-      23: "Jaén",
-      24: "León",
-      25: "Lleida",
-      26: "La Rioja",
-      27: "Lugo",
-      28: "Madrid",
-      29: "Málaga",
-      30: "Murcia",
-      31: "Navarra",
-      32: "Ourense",
-      33: "Asturias",
-      34: "Palencia",
-      35: "Las Palmas",
-      36: "Pontevedra",
-      37: "Salamanca",
-      38: "Santa Cruz de Tenerife",
-      39: "Cantabria",
-      40: "Segovia",
-      41: "Sevilla",
-      42: "Soria",
-      43: "Tarragona",
-      44: "Teruel",
-      45: "Toledo",
-      46: "Valencia/València",
-      47: "Valladolid",
-      48: "Bizkaia",
-      49: "Zamora",
-      50: "Zaragoza",
-      51: "Ceuta",
-      52: "Melilla",
-    };
+    /*
+       Simplificamos los datos para enviarlos al frontend
+       Nombre y código (id)
+       Mapa de códigos de provincia 
+       Uso "" para los códigos con 0 a la izquierda para 
+       que no los intreprete como números enteros sin el cero
+    */
+    const codigosProvincia = require("./data/codigosProvincia");
 
     // Simplificamos los datos para enviarlos al frontend
     // Solo necesitamos nombre y código (id)
