@@ -20,6 +20,7 @@ app.use(express.json()); // Habilitar el parseo de datos JSON en las peticiones
 
 // Rutas
 // Usamos el prefijo /api para todas las rutas del clima
+// Cualquier petición que empiece por /api se redirigirá a weatherRoutes
 app.use("/api", weatherRoutes);
 
 // Ruta de prueba (checkeo de funcionamiento a la ruta raíz - http://localhost:3000/ desde el navegador)
