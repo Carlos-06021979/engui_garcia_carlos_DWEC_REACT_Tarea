@@ -48,12 +48,15 @@ async function fetchFromAemet(endpoint) {
     if (!response2.ok)
       throw new Error(`Error AEMET Paso 2: ${response2.statusText}`); // Lanzamos un error con el mensaje de AEMET
 
-    // La API de la AEMET es antigua y a veces envía los datos con una codificación antigua (ISO-8859-1 (Latin1)) que no es UTF-8 por lo que no se pueden mostrar correctamente los acentos y las "ñ" de los municipios
+    /*
+    La API de la AEMET es antigua y a veces envía los datos con una codificación antigua (Latin1) que 
+    no es UTF-8 por lo que no se pueden mostrar correctamente los acentos y las "ñ" de los municipios
+    */
     const arrayBuffer = await response2.arrayBuffer(); // Convertimos la respuesta a un array de bytes crudos
 
     const decoder = new TextDecoder("iso-8859-1"); // Decodificamos el array de bytes crudos con la codificación ISO-8859-1
 
-    const text = decoder.decode(arrayBuffer); // Convertimos el array de bytes crudos a texto
+    const text = decoder.decode(arrayBuffer); // Convertimos el array de bytes crudos a textoº
 
     // Parseamos el texto a JSON
     return JSON.parse(text);
@@ -67,4 +70,5 @@ async function fetchFromAemet(endpoint) {
   }
 }
 
+// Exportamos la función
 module.exports = { fetchFromAemet };
