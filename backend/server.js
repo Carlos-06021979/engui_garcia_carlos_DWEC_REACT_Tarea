@@ -1,5 +1,5 @@
 // Importamos las librerías necesarias
-const express = require("express"); // Framework para crear el servidor web
+const express = require("express");
 /* 
 Mi Frontend (Vite/React) corre en el puerto 5173 y mi Backend en el 3000. Sin esta línea, 
 el navegador bloquearía la comunicación por seguridad.
@@ -10,8 +10,7 @@ require("dotenv").config(); // Librería para leer variables de entorno del arch
 // Importamos las rutas
 const weatherRoutes = require("./routes/weatherRoutes");
 
-// Inicializamos la aplicación Express
-const app = express();
+const app = express(); // Inicializamos la aplicación Express
 const PORT = process.env.PORT || 3000; // Puerto donde escuchará el servidor
 
 // Configuración de Middlewares
@@ -25,12 +24,12 @@ app.use("/api", weatherRoutes);
 
 // Ruta de prueba (checkeo de funcionamiento a la ruta raíz - http://localhost:3000/ desde el navegador)
 app.get("/", (req, res) => {
-  res.json({ mensaje: "Servidor Backend AEMET funcionando 🚀", estado: "OK" });
+  res.json({ mensaje: "Servidor Backend AEMET funcionando", estado: "OK" });
 });
 
 // Arrancar el servidor
 app.listen(PORT, () => {
   console.log(`\n==================================================`);
-  console.log(`🚀 Servidor escuchando en http://localhost:${PORT}`);
+  console.log(`Servidor escuchando en http://localhost:${PORT}`);
   console.log(`==================================================\n`);
 });
