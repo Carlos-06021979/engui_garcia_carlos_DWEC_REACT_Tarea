@@ -1,6 +1,11 @@
 // Importamos las librerías necesarias
 const express = require("express"); // Framework para crear el servidor web
-const cors = require("cors"); // Middleware para permitir peticiones desde otros dominios (el frontend)
+
+/* 
+Mi Frontend (Vite/React) corre en el puerto 5173 y mi Backend en el 3000. Sin esta línea, 
+el navegador bloquearía la comunicación por seguridad.
+*/
+const cors = require("cors");
 require("dotenv").config(); // Librería para leer variables de entorno del archivo .env
 
 // Inicializamos la aplicación Express
@@ -16,11 +21,11 @@ app.use(express.json()); // Habilitar el parseo de datos JSON en las peticiones
 // FUNCIONES AUXILIARES
 // ==========================================
 
-/**
- * Función genérica para obtener datos de la API de AEMET.
- * La API de AEMET funciona en dos pasos:
- * 1. Hacemos una petición con la API Key. devuelven una URL de datos temporal.
- * 2. Hacemos una petición a esa URL temporal para obtener los datos reales.
+/*
+ Función genérica para obtener datos de la API de AEMET.
+ La API de AEMET funciona en dos pasos:
+ Primero hacemos una petición con la API Key. Devuelven una URL de datos temporal.
+ Posteriormente hacemos una petición a esa URL temporal para obtener los datos reales.
  */
 async function fetchFromAemet(endpoint) {
   try {
@@ -62,7 +67,11 @@ async function fetchFromAemet(endpoint) {
 
     // AEMET sometimes uses ISO-8859-1 (Latin1) and fetch.json() might fail or produce garbage UTF-8
     const arrayBuffer = await response2.arrayBuffer();
-    const decoder = new TextDecoder("iso-8859-1"); // Force decoding as Latin1
+    /*
+    AEMET a veces envía los datos con una codificación antigua (Latin1) y que, de no hacerlo así, 
+    los acentos y las "ñ" de los municipios saldrían con símbolos raros.
+    */
+    const decoder = new TextDecoder("iso-8859-1");
     const text = decoder.decode(arrayBuffer);
 
     // Parse JSON manually from the decoded text
