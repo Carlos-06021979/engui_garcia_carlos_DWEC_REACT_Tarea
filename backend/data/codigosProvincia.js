@@ -1,3 +1,4 @@
+// Codigos de las provincias españolas
 const codigosProvincia = {
   "01": "Álava/Araba",
   "02": "Albacete",
@@ -53,4 +54,5 @@ const codigosProvincia = {
   52: "Melilla",
 };
 
+// Exportamos el objeto codigosProvincia
 module.exports = codigosProvincia;
