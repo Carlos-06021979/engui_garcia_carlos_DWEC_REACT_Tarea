@@ -1,11 +1,13 @@
 import { useState } from "react"; // Importamos el hook useState
 import { useLanguage } from "../context/LanguageContext"; // Importamos el hook useLanguage
-import { Cloud, CloudRain, Sun, Wind } from "lucide-react"; // Importamos los iconos de lucide-react
+import { CloudRain, Sun, Wind } from "lucide-react"; // Importamos los iconos de lucide-react
+import { extractHourlyData } from "../services/dataAdapter"; // Importamos el adaptador de datos
+import { getWeatherIcon } from "../utils/weatherUtils"; // Importamos la utilidad de iconos
 
 export const HourlyForecast = ({ data }) => {
   const { t } = useLanguage(); // Obtenemos la función t para traducir
 
-  const [showAll, setShowAll] = useState(false); // State for toggle
+  const [showAll, setShowAll] = useState(false); // Estado para el botón de mostrar/ocultar
 
   // Si no hay datos, no mostramos nada
   if (
@@ -16,63 +18,13 @@ export const HourlyForecast = ({ data }) => {
   )
     return null;
 
-  /*
-  La API devuelve días, y cada día tiene 'estadoCielo', 'precipitacion', 'temperatura', 'viento' como 
-  arrays con 'periodo'
-  'periodo' es usualmente "00", "01", ... "23" para las horas.
-
-  Tomamos el primer día (hoy) y quizás el segundo día si es necesario, pero la AEMET por horas suele 
-  ser los próximos 48h agrupados por día.
-  Aplanaremos la lista para mostrar una línea de tiempo continua.
-  */
-
   const today = data.prediccion.dia[0]; // Obtenemos el primer día (hoy)
-
-  /*
-  Para cada hora, obtenemos la descripción del estado del cielo, la temperatura, 
-  la precipitación y la velocidad del viento
-  */
-  const extractHours = (dayData) => {
-    // Si no hay datos, devolvemos un array vacío
-    if (!dayData) return [];
-
-    // estadoCielo es la referencia para las horas, usualmente.
-    return (
-      dayData.estadoCielo
-        .map((sky, index) => {
-          /*
-        Encontrar datos correspondientes en otros arrays por índice o período?
-        Los arrays de AEMET suelen coincidir en longitud para las horas.
-        */
-          return {
-            period: sky.periodo, // Hora
-            description: sky.descripcion, // Descripción del estado del cielo
-            temp: dayData.temperatura[index]?.value, // Temperatura
-            rain: dayData.precipitacion[index]?.value, // Precipitación
-
-            /*
-           El viento suele tener una estructura algo distinta, pero vamos a intentar el 
-           acceso directo por índice.
-          */
-            wind:
-              // Si hay datos de viento, obtenemos la velocidad, si no, 0
-              dayData.vientoAndRachaMax && dayData.vientoAndRachaMax[index]
-                ? dayData.vientoAndRachaMax[index].velocidad
-                : 0,
-          };
-        })
-        // Revisa cada elemento h y mira si tiene periodo, si no lo tiene, lo descarta
-        .filter((h) => h.period)
-        // Ordena los elementos por periodo
-        .sort((a, b) => parseInt(a.period) - parseInt(b.period))
-    );
-  };
 
   // Obtenemos la hora actual
   const currentHour = new Date().getHours();
 
-  // Filtra las horas basadas en el toggle
-  const hoursToday = extractHours(today).filter((h) =>
+  // Usamos el adaptador para obtener los datos transformados
+  const hoursToday = extractHourlyData(today).filter((h) =>
     /*
     Si showAll es true, muestra todas las horas, si no, muestra solo las horas 
     actuales o posteriores
@@ -157,13 +109,16 @@ export const HourlyForecast = ({ data }) => {
             key={index}
             /*
             Tarjeta de hora individual:
-            - flex-shrink-0: evita que la tarjeta se encoja
-            - w-20: ancho de la tarjeta
-            - flex flex-col items-center justify-between: disposición vertical con centrado
-            - p-3: padding interno
-            - bg-slate-50 dark:bg-slate-900/50: color de fondo
+            - flex-shrink-0: evita que la tarjeta se encoja si falta espacio, forzando el scroll
+            - w-20: ancho fijo de 5rem (80px) para cada tarjeta
+            - flex flex-col: disposición vertical de los elementos internos
+            - items-center: centra los elementos horizontalmente
+            - justify-between: distribuye el espacio verticalmente entre los elementos
+            - p-3: padding interno de 0.75rem
+            - bg-slate-50: fondo claro en modo normal
+            - dark:bg-slate-900/50: fondo oscuro al 50% de opacidad en modo oscuro
             - rounded-2xl: bordes redondeados
-            - snap-start: comportamiento de ajuste magnético al hacer scroll
+            - snap-start: punto de anclaje para el scroll magnético (al principio de la tarjeta)
             */
             className="flex-shrink-0 w-20 flex flex-col items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/50 rounded-2xl snap-start"
           >
@@ -184,26 +139,9 @@ export const HourlyForecast = ({ data }) => {
             <div className="my-2">
               {/*
               Lógica de icono:
-              - Si la lluvia es mayor a 0, muestra el icono de lluvia
-              - Si no, muestra el icono de sol
+              Usamos la utilidad getWeatherIcon pasando la lluvia y la descripción
               */}
-              {hour.rain > 0 ? (
-                /*
-                Icono de lluvia:
-                - CloudRain: icono de lluvia de lucide-react
-                - w-6 h-6: tamaño del icono
-                - text-blue-500: color del icono
-                */
-                <CloudRain className="w-6 h-6 text-blue-500" />
-              ) : (
-                /*
-                Icono de sol:
-                - Sun: icono de sol de lucide-react
-                - w-6 h-6: tamaño del icono
-                - text-orange-500: color del icono
-                */
-                <Sun className="w-6 h-6 text-orange-500" />
-              )}
+              {getWeatherIcon(hour.rain, hour.description, "w-6 h-6")}
             </div>
 
             {/*

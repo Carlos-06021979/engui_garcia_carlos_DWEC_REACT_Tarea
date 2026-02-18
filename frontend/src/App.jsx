@@ -1,72 +1,25 @@
-import { useState } from "react";
 import { Header } from "./components/Header";
 import { Search } from "./components/Search";
 import { WeatherCard } from "./components/WeatherCard";
 import { WeatherForecast } from "./components/WeatherForecast";
 import { HourlyForecast } from "./components/HourlyForecast";
 import { useLanguage } from "./context/LanguageContext";
-import { getWeatherPrediction } from "./services/api";
 import { Loader2 } from "lucide-react";
+import { useWeather } from "./hooks/useWeather"; // Importamos el custom hook
 
 function App() {
   const { t } = useLanguage();
-  const [selectedMunicipality, setSelectedMunicipality] = useState(null);
-  const [weatherData, setWeatherData] = useState(null);
-  const [hourlyData, setHourlyData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
-  const handleSelection = async (municipality) => {
-    console.log("Municipio seleccionado:", municipality);
-    setSelectedMunicipality(municipality);
-    setError(null);
-    setWeatherData(null);
-    setHourlyData(null);
-
-    // If no municipality selected (cleared), stop here
-    if (!municipality) {
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      // Clean ID (remove 'id' prefix if present)
-      const code = municipality.id.replace("id", "");
-
-      const response = await getWeatherPrediction(code);
-      // We also need hourly. Let's fetch it from our backend.
-      const hourlyResponse = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:3000"}/api/prediccion-horas/${code}`,
-      );
-      const hourlyJson = await hourlyResponse.json();
-
-      if (response.success && response.datos) {
-        setWeatherData(response.datos[0]);
-      } else {
-        throw new Error("No daily data received");
-      }
-
-      if (hourlyJson.success && hourlyJson.datos) {
-        setHourlyData(hourlyJson.datos[0]);
-      }
-    } catch (err) {
-      console.error(err);
-      if (
-        err.message.includes("Failed to fetch") ||
-        err.message.includes("NetworkError")
-      ) {
-        setError(
-          "No se pudo conectar con el servidor. Revisa tu conexión a internet o si el backend está encendido.",
-        );
-      } else {
-        setError("Error al cargar la predicción. Inténtalo de nuevo.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Usamos el custom hook para manejar toda la lógica del clima
+  const {
+    selectedMunicipality,
+    weatherData,
+    hourlyData,
+    loading,
+    error,
+    handleSelection,
+    clearError,
+  } = useWeather();
 
   return (
     /*
@@ -100,10 +53,7 @@ function App() {
           </h2>
 
           <div className="mb-8 max-w-md mx-auto">
-            <Search
-              onSelect={handleSelection}
-              onSearchChange={() => setError(null)}
-            />
+            <Search onSelect={handleSelection} onSearchChange={clearError} />
           </div>
 
           {!selectedMunicipality && !loading && (

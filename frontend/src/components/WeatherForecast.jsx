@@ -1,30 +1,10 @@
 import { useLanguage } from "../context/LanguageContext";
-import { Sun, Cloud, CloudRain, CloudSnow, CloudLightning } from "lucide-react";
+import { getWeatherIcon, formatDayName } from "../utils/weatherUtils";
 
 export const WeatherForecast = ({ data }) => {
   const { t } = useLanguage();
 
   if (!data || !data.prediccion || !data.prediccion.dia) return null;
-
-  // Helper to get icon (simplified)
-  // In a real app, map 'estadoCielo' codes from AEMET to icons
-  // Helper to get icon based on sky state and rain probability
-  const getIcon = (day) => {
-    const rainProb = day.probPrecipitacion[0]?.value || 0;
-    const skyState = day.estadoCielo[0]?.descripcion?.toLowerCase() || "";
-
-    if (
-      rainProb >= 50 ||
-      skyState.includes("lluvia") ||
-      skyState.includes("tormenta")
-    ) {
-      return <CloudRain className="text-blue-500 w-8 h-8" />;
-    } else if (skyState.includes("nuboso") || skyState.includes("cubierto")) {
-      return <Cloud className="text-slate-500 w-8 h-8" />;
-    } else {
-      return <Sun className="text-yellow-500 w-8 h-8" />;
-    }
-  };
 
   return (
     /*
@@ -50,15 +30,26 @@ export const WeatherForecast = ({ data }) => {
       */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {data.prediccion.dia.map((day, index) => {
-          const date = new Date(day.fecha);
-          // Format: "Lun 16"
-          const dayName = date.toLocaleDateString("es-ES", {
-            weekday: "short",
-            day: "numeric",
-          });
+          // Obtenemos el nombre del día formateado
+          const dayName = formatDayName(day.fecha);
+
+          // Obtenemos el icono usando la utilidad
+          const weatherIcon = getWeatherIcon(
+            day.probPrecipitacion[0]?.value || 0,
+            day.estadoCielo[0]?.descripcion || "",
+            "text-blue-500 w-8 h-8",
+          );
 
           return (
             <div key={index}>
+              {/* 
+              Nombre del día:
+              - text-slate-500: color de texto gris medio
+              - dark:text-slate-400: gris más claro en modo oscuro
+              - font-medium: peso de fuente medio
+              - capitalize: primera letra mayúscula
+              - mb-2: margen inferior
+              */}
               <span className="text-slate-500 dark:text-slate-400 font-medium capitalize mb-2">
                 {dayName}
               </span>
@@ -66,8 +57,14 @@ export const WeatherForecast = ({ data }) => {
                 className="mb-2"
                 title={day.estadoCielo[0]?.descripcion || ""}
               >
-                {getIcon(day)}
+                {weatherIcon}
               </div>
+              {/* 
+              Temperaturas Máx/Min:
+              - flex items-center gap-2: alineación horizontal con espacio
+              - text-sm: texto pequeño
+              - font-semibold: negrita media
+              */}
               <div className="flex items-center gap-2 text-sm font-semibold">
                 <span className="text-slate-900 dark:text-white">
                   {day.temperatura.maxima}°
@@ -76,6 +73,13 @@ export const WeatherForecast = ({ data }) => {
                   {day.temperatura.minima}°
                 </span>
               </div>
+              {/* 
+              Probabilidad de Lluvia:
+              - mt-2: margen superior
+              - text-xs: texto muy pequeño
+              - text-blue-500: color azul
+              - font-medium: peso medio
+              */}
               <div className="mt-2 text-xs text-blue-500 font-medium">
                 {day.probPrecipitacion[0]?.value || 0}% Lluvia
               </div>

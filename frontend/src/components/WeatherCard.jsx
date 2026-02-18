@@ -1,80 +1,32 @@
-import { useLanguage } from "../context/LanguageContext";
-import { Cloud, Sun, CloudRain, Wind, Droplets, Calendar } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext"; // Importamos el contexto de idioma
+import { StatCard } from "./StatCard"; // Importamos el componente reutilizable StatCard
+import { getWeatherIcon, formatCurrentDate } from "../utils/weatherUtils"; // Importamos utilidades
+import { Wind, Droplets, Sun } from "lucide-react"; // Iconos para pasar como props o usar directamente
 
+// Muestra la información del clima para un municipio
 export const WeatherCard = ({ data, municipality }) => {
-  const { t } = useLanguage();
+  // Recibe como props: data (datos del clima) y municipality (datos del municipio)
 
-  if (!data) return null;
+  const { t } = useLanguage(); // Obtenemos la función t del contexto de idioma
 
-  // Helper to get icon based on state (simplified logic)
-  const getWeatherIcon = (state) => {
-    // AEMET returns state codes, but for now we'll map simple text or default
-    // Real implementation would map AEMET codes to icons
-    return <Sun className="w-16 h-16 text-yellow-500 animate-pulse-slow" />;
-  };
+  if (!data) return null; // Si no hay datos, no mostramos nada
 
+  // Obtenemos los datos de hoy
   const today = data.prediccion.dia[0];
-  const tomorrow = data.prediccion.dia[1];
 
-  // Helper to get icon based on sky state and rain probability (Consistent with WeatherForecast)
-  const getIcon = () => {
-    // If we have precise sky state
-    const skyState = today.estadoCielo.descripcion?.toLowerCase() || "";
-    const rainProb = today.probPrecipitacion[0]?.value || 0;
+  // Obtenemos la fecha formateada desde la utilidad
+  const fullDate = formatCurrentDate();
 
-    if (
-      rainProb >= 50 ||
-      skyState.includes("lluvia") ||
-      skyState.includes("tormenta")
-    ) {
-      return (
-        <CloudRain className="text-blue-500 w-20 h-20 animate-pulse-slow" />
-      );
-    } else if (
-      skyState.includes("nuboso") ||
-      skyState.includes("cubierto") ||
-      skyState.includes("nubes")
-    ) {
-      return <Cloud className="text-slate-500 w-20 h-20" />;
-    } else {
-      return <Sun className="text-yellow-500 w-20 h-20 animate-spin-slow" />;
-    }
-  };
-
-  // Custom date formatter to match user request (Capitalized, with Year)
-  const formatDate = () => {
-    const d = new Date();
-    const days = [
-      "Domingo",
-      "Lunes",
-      "Martes",
-      "Miércoles",
-      "Jueves",
-      "Viernes",
-      "Sábado",
-    ];
-    const months = [
-      "Enero",
-      "Febrero",
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio",
-      "Agosto",
-      "Septiembre",
-      "Octubre",
-      "Noviembre",
-      "Diciembre",
-    ];
-    return `${days[d.getDay()]}, ${d.getDate()} de ${months[d.getMonth()]} de ${d.getFullYear()}`;
-  };
-
-  const fullDate = formatDate();
+  // Obtenemos el icono dinámico desde la utilidad
+  const weatherIcon = getWeatherIcon(
+    today.probPrecipitacion[0]?.value || 0,
+    today.estadoCielo.descripcion,
+    "w-20 h-20 animate-pulse-slow",
+  );
 
   return (
     <div className="w-full max-w-4xl mx-auto animate-fade-in">
-      {/* Main Card (Today) with Background Image */}
+      {/* Tarjeta Principal (Hoy) con Imagen de Fondo */}
       {/* 
       Tarjeta principal del clima:
       - w-full max-w-4xl mx-auto: ancho y centrado
@@ -84,15 +36,14 @@ export const WeatherCard = ({ data, municipality }) => {
       - relative: para posicionar capas internas absolutas
       */}
       <div className="w-full max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-700 transition-all duration-300 transform hover:scale-[1.01] relative">
-        {/* Background Image Layer */}
+        {/* Capa de Imagen de Fondo */}
         <div
           className="absolute inset-0 z-0 opacity-60 dark:opacity-40 bg-cover bg-center transition-opacity duration-1000"
           style={{
-            // Try to find specific city image, fallback to spain/landscape
+            // Intentamos encontrar una imagen específica de la ciudad, si no, usamos españa/paisaje
             backgroundImage: `url('https://loremflickr.com/1600/900/${municipality.nombre},spain,landscape/all')`,
           }}
         />
-        {/* Gradient Overlay for better text contrast */}
         {/* Capa de degradado para mejorar legibilidad del texto sobre la imagen */}
         <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-white/30 dark:from-slate-900/90 dark:via-slate-900/70 dark:to-slate-900/30 z-0 pointer-events-none" />
 
@@ -114,8 +65,8 @@ export const WeatherCard = ({ data, municipality }) => {
               className="mt-4 md:mt-0 flex items-center"
               title="Estado actual"
             >
-              {/* Dynamic Icon */}
-              {getIcon()}
+              {/* Icono Dinámico */}
+              {weatherIcon}
             </div>
 
             {/* Temperature & Stats */}
@@ -129,80 +80,42 @@ export const WeatherCard = ({ data, municipality }) => {
                 </span>
               </div>
 
-              {/* Cuadrícula de estadísticas (Humedad, Viento, etc) */}
+              {/* Cuadrícula de estadísticas (Humedad, Viento, etc) usando StatCard */}
               <div className="grid grid-cols-2 gap-4">
-                {/* Humidity */}
-                <div
-                  /* 
-                  Tarjeta de estadística (Humedad):
-                  - bg-slate-50: fondo muy claro
-                  - dark:bg-slate-700/30: fondo oscuro semitransparente
-                  - p-4: padding interno
-                  - rounded-2xl: bordes redondeados
-                  - backdrop-blur-sm: efecto de desenfoque de fondo (glassmorphism)
-                  - flex items-center: alinea icono y texto
-                  */
-                  className="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-2xl flex items-center gap-3 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/50 backdrop-blur-sm"
-                  title={t("humidity")}
-                >
-                  {/* Icono de humedad con fondo azul */}
-                  <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg text-blue-600 dark:text-blue-400">
-                    <Droplets size={20} aria-label={t("humidity")} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {t("humidity")}
-                    </p>
-                    <p className="font-semibold text-slate-700 dark:text-slate-200">
-                      {today.humedadRelativa.maxima}%
-                    </p>
-                  </div>
-                </div>
+                {/* Humedad */}
+                <StatCard
+                  label={t("humidity")}
+                  value={`${today.humedadRelativa.maxima}%`}
+                  icon={<Droplets size={20} aria-label={t("humidity")} />}
+                  bgColor="bg-blue-100 dark:bg-blue-900/50"
+                  textColor="text-blue-600 dark:text-blue-400"
+                />
 
-                {/* Wind */}
-                <div
-                  className="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-2xl flex items-center gap-3 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/50 backdrop-blur-sm"
-                  title={t("wind")}
-                >
-                  <div className="p-2 bg-teal-100 dark:bg-teal-900/50 rounded-lg text-teal-600 dark:text-teal-400">
-                    <Wind size={20} aria-label={t("wind")} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {t("wind")}
-                    </p>
-                    <p className="font-semibold text-slate-700 dark:text-slate-200">
-                      {today.viento[0]?.velocidad || 0} km/h
-                    </p>
-                  </div>
-                </div>
+                {/* Viento */}
+                <StatCard
+                  label={t("wind")}
+                  value={`${today.viento[0]?.velocidad || 0} km/h`}
+                  icon={<Wind size={20} aria-label={t("wind")} />}
+                  bgColor="bg-teal-100 dark:bg-teal-900/50"
+                  textColor="text-teal-600 dark:text-teal-400"
+                />
 
-                {/* UV Index */}
+                {/* Índice UV */}
                 {today.uvMax && (
-                  <div
-                    className="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-2xl flex items-center gap-3 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/50 backdrop-blur-sm"
-                    title={t("uv_index")}
-                  >
-                    <div className="p-2 bg-orange-100 dark:bg-orange-900/50 rounded-lg text-orange-600 dark:text-orange-400">
-                      <Sun size={20} aria-label={t("uv_index")} />
-                    </div>
-                    <div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                        {t("uv_index")}
-                      </p>
-                      <p className="font-semibold text-slate-700 dark:text-slate-200">
-                        {today.uvMax}
-                      </p>
-                    </div>
-                  </div>
+                  <StatCard
+                    label={t("uv_index")}
+                    value={today.uvMax}
+                    icon={<Sun size={20} aria-label={t("uv_index")} />}
+                    bgColor="bg-orange-100 dark:bg-orange-900/50"
+                    textColor="text-orange-600 dark:text-orange-400"
+                  />
                 )}
 
-                {/* Thermal Sensation */}
-                <div
-                  className="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-2xl flex items-center gap-3 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/50 backdrop-blur-sm"
-                  title={t("thermal_sensation")}
-                >
-                  <div className="p-2 bg-red-100 dark:bg-red-900/50 rounded-lg text-red-600 dark:text-red-400">
+                {/* Sensación Térmica */}
+                <StatCard
+                  label={t("thermal_sensation")}
+                  value={`${today.sensTermica?.maxima}°C`}
+                  icon={
                     <svg
                       className="w-5 h-5"
                       fill="none"
@@ -217,16 +130,10 @@ export const WeatherCard = ({ data, municipality }) => {
                         d="M13 10V3L4 14h7v7l9-11h-7z"
                       />
                     </svg>
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {t("thermal_sensation")}
-                    </p>
-                    <p className="font-semibold text-slate-700 dark:text-slate-200">
-                      {today.sensTermica?.maxima}°C
-                    </p>
-                  </div>
-                </div>
+                  }
+                  bgColor="bg-red-100 dark:bg-red-900/50"
+                  textColor="text-red-600 dark:text-red-400"
+                />
               </div>
             </div>
           </div>
