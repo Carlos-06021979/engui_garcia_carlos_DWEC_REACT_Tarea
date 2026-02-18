@@ -26,14 +26,23 @@ export const WeatherForecast = ({ data }) => {
     }
   };
 
-  const days = data.prediccion.dia.slice(1, 6); // Next 5 days
-
-  return (
+    /*
+    Contenedor de predicción a 5 días:
+    - mt-6: margen superior
+    - bg-white: fondo tarjeta
+    - animate-slide-up: animación de entrada
+    */
     <div className="w-full max-w-4xl mx-auto mt-6 bg-white dark:bg-slate-800 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 animate-slide-up">
       <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4 pl-2">
         {t("forecast") || "Próximos Días"}
       </h3>
 
+      {/* 
+      Grid responsivo:
+      - grid-cols-2: 2 columnas en móvil
+      - md:grid-cols-5: 5 columnas en pantallas medianas/grandes
+      - gap-4: espacio entre tarjetas
+      */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {days.map((day, index) => {
           const date = new Date(day.fecha);
@@ -46,7 +55,6 @@ export const WeatherForecast = ({ data }) => {
           return (
             <div
               key={index}
-              className="flex flex-col items-center p-3 bg-slate-50 dark:bg-slate-900/50 rounded-2xl hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors cursor-default"
             >
               <span className="text-slate-500 dark:text-slate-400 font-medium capitalize mb-2">
                 {dayName}

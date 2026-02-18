@@ -69,10 +69,24 @@ function App() {
   };
 
   return (
+    /*
+    Contenedor principal de la aplicación:
+    - min-h-screen: ocupa al menos toda la altura de la pantalla
+    - bg-slate-50: fondo claro por defecto
+    - dark:bg-slate-900: fondo oscuro en modo dark
+    - transition-colors: suaviza el cambio de tema
+    */
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 pb-10">
       <Header />
 
       <main className="container mx-auto px-4 mt-8">
+        {/* 
+        Tarjeta del buscador y título:
+        - bg-white dark:bg-slate-800: fondo blanco/gris oscuro
+        - p-8 rounded-2xl shadow-lg: espaciado interno, bordes redondeados, sombra
+        - max-w-4xl mx-auto: ancho máximo y centrado horizontal
+        - border...: borde sutil para separar del fondo
+        */}
         <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg text-center max-w-4xl mx-auto border border-slate-200 dark:border-slate-700 transition-colors mb-8">
           <h2 className="text-3xl font-bold mb-6 text-slate-800 dark:text-white">
             {t("title")}
@@ -93,11 +107,13 @@ function App() {
 
           {loading && (
             <div className="flex justify-center py-10">
+              {/* Spinner de carga: animate-spin hace que gire */}
               <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
             </div>
           )}
 
           {error && (
+            /* Mensaje de error con fondo rojo suave */
             <div className="p-4 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl">
               {error}
             </div>
@@ -105,6 +121,7 @@ function App() {
         </div>
 
         {weatherData && !loading && (
+          /* Contenedor de resultados con animación de entrada (fade-in) */
           <div className="animate-fade-in space-y-6">
             <WeatherCard
               data={weatherData}

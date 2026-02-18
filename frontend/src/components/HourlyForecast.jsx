@@ -57,6 +57,12 @@ export const HourlyForecast = ({ data }) => {
   // Let's stick to simple "Filter out past" for now as requested.
 
   return (
+    /*
+    Contenedor de pronóstico por horas:
+    - w-full max-w-4xl: ancho completo con tope máximo
+    - rounded-3xl: bordes muy redondeados
+    - animate-slide-up: animación personalizada de entrada
+    */
     <div className="w-full max-w-4xl mx-auto mt-6 bg-white dark:bg-slate-800 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 animate-slide-up">
       <div className="flex justify-between items-center mb-4 pl-2 pr-2">
         <h3 className="text-xl font-bold text-slate-800 dark:text-white">
@@ -70,10 +76,17 @@ export const HourlyForecast = ({ data }) => {
         </button>
       </div>
 
+      {/*
+      Contenedor con scroll horizontal:
+      - overflow-x-auto: permite scroll lateral
+      - scrollbar-hide: oculta la barra de scroll (clase personalizada o plugin)
+      - snap-x: el scroll se "imanta" a los elementos
+      */}
       <div className="flex overflow-x-auto pb-4 gap-4 scrollbar-hide snap-x">
         {hoursToday.map((hour, index) => (
           <div
             key={index}
+            /* Tarjeta de hora individual */
             className="flex-shrink-0 w-20 flex flex-col items-center justify-between p-3 bg-slate-50 dark:bg-slate-900/50 rounded-2xl snap-start"
           >
             <span className="text-sm font-medium text-slate-500 dark:text-slate-400">

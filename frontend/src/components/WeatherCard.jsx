@@ -75,6 +75,14 @@ export const WeatherCard = ({ data, municipality }) => {
   return (
     <div className="w-full max-w-4xl mx-auto animate-fade-in">
       {/* Main Card (Today) with Background Image */}
+      {/* 
+      Tarjeta principal del clima:
+      - w-full max-w-4xl mx-auto: ancho y centrado
+      - rounded-3xl shadow-xl: bordes y sombra pronunciados
+      - overflow-hidden: para que la imagen de fondo no se salga
+      - hover:scale-[1.01]: efecto zoom al pasar el ratón
+      - relative: para posicionar capas internas absolutas
+      */}
       <div className="w-full max-w-4xl mx-auto bg-white dark:bg-slate-800 rounded-3xl shadow-xl overflow-hidden border border-slate-200 dark:border-slate-700 transition-all duration-300 transform hover:scale-[1.01] relative">
         {/* Background Image Layer */}
         <div
@@ -85,9 +93,10 @@ export const WeatherCard = ({ data, municipality }) => {
           }}
         />
         {/* Gradient Overlay for better text contrast */}
+        {/* Capa de degradado para mejorar legibilidad del texto sobre la imagen */}
         <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-white/30 dark:from-slate-900/90 dark:via-slate-900/70 dark:to-slate-900/30 z-0 pointer-events-none" />
 
-        {/* Content Layer */}
+        {/* Contenido principal (z-10 para estar sobre el fondo) */}
         <div className="p-8 relative z-10">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
             <div>
@@ -120,9 +129,15 @@ export const WeatherCard = ({ data, municipality }) => {
                 </span>
               </div>
 
+              {/* Cuadrícula de estadísticas (Humedad, Viento, etc) */}
               <div className="grid grid-cols-2 gap-4">
                 {/* Humidity */}
                 <div
+                  /* 
+                  Tarjeta de estadística:
+                  - bg-slate-50: fondo muy claro
+                  - backdrop-blur-sm: efecto cristal
+                  */
                   className="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-2xl flex items-center gap-3 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/50 backdrop-blur-sm"
                   title={t("humidity")}
                 >
