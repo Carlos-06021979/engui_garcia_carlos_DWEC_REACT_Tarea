@@ -74,18 +74,26 @@ export const Header = () => {
           </button>
 
           {/* Theme Toggle */}
-          {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-yellow-400"
             /* 
             Botón de tema (Sol/Luna):
             - p-2 rounded-full: botón circular con padding
             - hover...: fondo al pasar el ratón
             - text...: color del icono (amarillo en oscuro para el sol)
             */
-            title={t("toggle_theme_tooltip")}
+            className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-yellow-400"
+            title={t("toggle_theme_tooltip")} // Tooltip que indica el cambio de tema
           >
+            {/* 
+            Icono de sol/luna de lucide-react:
+            - Moon: icono de luna
+            - Sun: icono de sol
+            - size={24}: tamaño del icono
+            - fill-slate-600: color del icono en modo claro
+            - fill-yellow-400: color del icono en modo oscuro
+            */}
+            {/* Si el tema es claro, se muestra el icono de la luna, si no, el del sol */}
             {theme === "light" ? (
               <Moon size={24} className="fill-slate-600" />
             ) : (
