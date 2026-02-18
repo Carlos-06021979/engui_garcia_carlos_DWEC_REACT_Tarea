@@ -1,9 +1,11 @@
-/**
- * Transforma los datos crudos de la API de AEMET para el componente HourlyForecast.
- * @param {Object} dayData - Datos de un día específico de la predicción de AEMET.
- * @returns {Array} Array de objetos planos con la información por hora.
+/*
+ Transforma los datos crudos de la API de AEMET para el componente HourlyForecast.
+ dayData - Datos de un día específico de la predicción de AEMET.
+ @returns Array de objetos planos con la información por hora.
  */
 export const extractHourlyData = (dayData) => {
+
+
   // Si no hay datos, devolvemos un array vacío
   if (!dayData) return [];
 
@@ -19,7 +21,7 @@ export const extractHourlyData = (dayData) => {
   Aquí aplanaremos estos datos para crear una línea de tiempo continua y fácil de consumir por el renderizado.
   */
 
-  // estadoCielo es la referencia para las horas, usualmente.
+  // EstadoCielo es la referencia para las horas, usualmente.
   return (
     dayData.estadoCielo
       .map((sky, index) => {
