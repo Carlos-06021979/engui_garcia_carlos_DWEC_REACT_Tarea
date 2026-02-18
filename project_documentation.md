@@ -1,4 +1,10 @@
-# Documentación del Proyecto: Aplicación Meteorológica con React y AEMET
+# Documentación del Proyecto: Aplicación Meteorológica
+
+**Alumno:** Carlos Enguí García
+**Módulo:** Desarrollo Web en Entorno Cliente (DWEC)
+**Curso:** 2025-26
+
+---
 
 ## 1. Introducción y Objetivos
 
@@ -7,103 +13,105 @@ El objetivo principal de este proyecto es desarrollar una aplicación web modern
 Uno de los requisitos más importantes que he tenido en cuenta es la arquitectura de la aplicación. Para no exponer mi clave privada de la API de AEMET en el navegador del cliente (algo inseguro), he implementado un servidor intermedio (proxy) en Node.js. Así, la comunicación sigue este flujo:
 `Cliente React` -> `Mi Servidor Express` -> `API AEMET`.
 
-## 2. Tecnologías y Decisiones Técnicas
+---
 
-### Frontend (React)
+## 2. Arquitectura de Archivos y Componentes
 
-He elegido **Vite** como empaquetador porque es mucho más rápido que `create-react-app` y ofrece una experiencia de desarrollo más fluida.
-Para el diseño, he optado por **Tailwind CSS**. Me ha permitido crear una interfaz responsiva y moderna sin tener que escribir cientos de líneas de CSS tradicional, y facilita mucho la implementación del **Modo Oscuro**.
+A continuación, se detalla la estructura técnica del proyecto y la responsabilidad de cada archivo clave.
 
-### Gestión del Estado (Internacionalización y temas)
+### 2.1 Frontend (`/frontend/src/`)
 
-Para funcionalidades globales como el cambio de idioma (Inglés/Español) y el tema (Claro/Oscuro), he decidido no usar librerías externas complejas como Redux. En su lugar, he utilizado el propio **Context API** de React (`useContext`).
+El frontend es una SPA construida con **React** y estilizada con **Tailwind CSS**.
 
-**Implementación Técnica:**
+#### A. Configuración y Entrada
 
-- **ThemeContext**: Detecta automáticamente si el usuario prefiere modo oscuro en su sistema operativo al cargar la página. Guarda la preferencia en `localStorage` para que se recuerde en futuras visitas.
-- **LanguageContext**: Utiliza un diccionario de traducciones (`src/data/translations.js`) y expone una función `t('clave')` que devuelve el texto en el idioma seleccionado.
+- **`main.jsx`**: Punto de entrada de React. Monta la aplicación en el DOM y envuelve a `App` con los proveedores de contexto (`LanguageProvider`, `ThemeProvider`).
+- **`App.jsx`**: Componente raíz. Define la estructura visual base (Layout) y orquesta la aplicación usando el hook `useWeather`. No contiene lógica compleja, solo visualización.
 
-### Hooks Utilizados (Requisito Clave)
+#### B. Componentes (`/components`)
 
-He hecho un uso extensivo de los Hooks de React para gestionar el ciclo de vida y el estado de los componentes funcionales:
+- **`Search.jsx`**: Buscador de municipios con autocompletado y validación.
+- **`WeatherCard.jsx`**: Muestra el clima **actual**. Usa sub-componentes como `StatCard` para métricas (humedad, viento, UV).
+- **`HourlyForecast.jsx`**: Carrusel de predicción por horas (scroll horizontal).
+- **`WeatherForecast.jsx`**: Lista vertical de predicción a 7 días.
+- **`Header.jsx`**: Barra superior con selector de idioma y tema.
 
-1.  **`useState`**: Para gestionar estados locales como la query del buscador, los datos del tiempo cargados, el estado de carga (loading) y errores.
-2.  **`useEffect`**: Fundamental para operaciones con efectos secundarios, como llamar a la API cuando cambia el municipio seleccionado o filtrar la lista de búsqueda cuando el usuario escribe.
-3.  **`useContext`**: Para consumir los contextos globales de Tema e Idioma en cualquier componente sin prop-drilling.
-4.  **`useMemo`** (implícito en optimizaciones): Para evitar recálculos innecesarios en listas grandes.
+#### C. Custom Hooks (`/hooks`)
 
-Esto me ha permitido aplicar el patrón "Provider", donde un componente padre envuelve a toda la aplicación y provee el estado del idioma o del tema a cualquier componente hijo que lo necesite, evitando tener que pasar "props" manualmente por todos los niveles (prop drilling).
+- **`useWeather.js`**: **[CEREBRO]** Centraliza la lógica de negocio. Gestiona estados (`loading`, `error`, `data`), llama al servicio API y expone métodos a la vista.
 
-### Backend (Node + Express) y Adaptación
+#### D. Servicios y Utilidades
 
-Partiendo de la plantilla base, he realizado las siguientes **adaptaciones y ampliaciones**:
+- **`services/api.js`**: Cliente HTTP que conecta con nuestro Backend.
+- **`services/dataAdapter.js`**: **[TRANSFORMADOR]** Convierte el JSON complejo de AEMET en objetos simples para la UI.
+- **`utils/weatherUtils.jsx`**: Funciones puras para decidir iconos (`getWeatherIcon`) y formatear fechas.
 
-1.  **Proxy Reverso y CORS**: Configuré el servidor para aceptar peticiones desde mi frontend (puerto 5173) y redirigirlas a AEMET, solucionando el problema de CORS que bloquea las peticiones directas desde el navegador.
-2.  **Decodificación de Caracteres**: Implementé un middleware personalizado para transformar la respuesta de AEMET (ISO-8859-1) a UTF-8 antes de enviarla a React.
-3.  **Nuevos Endpoints**:
-    - `/api/municipios`: Obtiene y cachea la lista maestra.
-    - `/api/prediccion/:cod`: Obtiene la predicción diaria.
-    - `/api/prediccion-horas/:cod`: Obtiene la predicción horaria (nueva funcionalidad).
-4.  **Gestión de Errores**: Middleware para capturar fallos de red o errores 401/403 de la API externa y devolver mensajes JSON limpios al cliente.
+### 2.2 Backend (`/backend/`)
 
-## 3. Instalación y Ejecución
+Servidor **Node.js + Express** que actúa como Proxy.
 
-Para poner en marcha el proyecto, he seguido estos pasos:
+- **`server.js`**: Configura Express, CORS y rutas.
+- **`routes/weatherRoutes.js`**: Define endpoints públicos (`/api/municipios`, `/api/prediccion/...`).
+- **`services/aemetService.js`**: Gestiona la comunicación segura con AEMET usando la API Key oculta en `.env`.
 
-1.  **Backend**:
-    - Entrar en la carpeta `backend`.
-    - Instalar dependencias: `npm install`.
-    - Crear archivo `.env` con la API Key de AEMET.
-    - Arrancar servidor: `npm run dev`.
+---
 
-2.  **Frontend**:
-    - Inicializar proyecto con Vite: `npm create vite@latest frontend -- --template react`.
-    - Instalar Tailwind CSS (ver sección desarrollo).
-    - Arrancar cliente: `npm run dev`.
+## 3. Detalles de Implementación Técnica
 
-## 4. Desafíos y Soluciones Encontradas
+### 3.1 Flujo de Datos
 
-Durante el desarrollo, nos hemos enfrentado a varios retos técnicos interesantes que vale la pena mencionar:
+1.  **Inicio**: React carga y pide configuración.
+2.  **Búsqueda**: Usuario escribe -> `Search.jsx` pide lista a Backend.
+3.  **Selección**: `Search` notifica a `useWeather`.
+4.  **Petición**: `useWeather` pide datos al Proxy (Backend).
+5.  **Proxy**: Backend inyecta API Key y pide a AEMET.
+6.  **Respuesta**: Backend devuelve datos limpios (UTF-8) a Frontend.
+7.  **Render**: React pinta las tarjetas.
 
-### A. Codificación de Caracteres (Charset)
+### 3.2 Configuración y Estilos (Tailwind CSS)
 
-- **Problema**: La API de AEMET devuelve los datos en `ISO-8859-1` (alfabeto latino antiguo), lo que hacía que nombres como "Fuente Álamo" se vieran con símbolos extraños en React.
-- **Solución**: Implementamos un `TextDecoder` en el backend para transformar los datos binarios a `UTF-8` antes de enviarlos al frontend, asegurando que todas las tildes y ñ se vean perfectas.
+Se ha utilizado **Tailwind CSS** instalado vía `npm`.
 
-### B. Comportamiento del Buscador
+1.  **Configuración (`tailwind.config.js`)**: Configurado el `content` para escanear archivos `.jsx` (Tree Shaking).
+2.  **Estilos**: Inyectados mediante directivas `@tailwind` en `index.css`.
+3.  **Procesamiento**: Vite + PostCSS generan el CSS final optimizado.
 
-- **Problema**: Al seleccionar un municipio de la lista, el componente detectaba el cambio de texto y volvía a abrir las sugerencias, creando un bucle molesto para el usuario.
-- **Solución**: Refactorizamos la lógica del `useEffect` y creamos un manejador `handleInputChange` separado. Ahora la lista solo se abre cuando el usuario _escribe_, no cuando el sistema rellena el campo.
+### 3.3 Implementación del Tema (Oscuro/Claro)
 
-### C. Inconsistencias en Nombres de Municipios
+Manejado mediante `ThemeContext.jsx`:
 
-- **Solución**: Se ha mejorado la lógica de búsqueda normalizando el texto (quitando acentos y signos de puntuación). Además, **se ha implementado la búsqueda por Provincia y por Código de Municipio (INE)**.
-  > **Nota**: Dado que la API de AEMET no devuelve siempre el nombre de la provincia, hemos implementado un mapeo manual en el backend (`server.js`) que asocia los códigos INE (01-52) con sus respectivas provincias, garantizando que siempre se muestre el dato correcto (ej: `Murcia (Murcia)`).
+- Detecta preferencia del S.O. (`prefers-color-scheme`).
+- Guarda preferencia en `localStorage`.
+- Aplica clase `.dark` al `<html>`, activando estilos condicionales (`dark:bg-slate-800`).
 
-### D. Visualización de Datos Horarios
+### 3.4 Internacionalización (i18n)
 
-- **Problema**: Mostrar todas las horas del día a veces saturaba al usuario.
-- **Solución**: Se ha implementado un componente `HourlyForecast` con scroll horizontal y filtrado de horas pasadas.
+Manejado mediante `LanguageContext.jsx`:
 
-### E. Gestión de Errores y Robustez
+- Sistema ligero con diccionario JSON (`translations.js`).
+- Función `t('clave')` disponible en toda la app vía hook `useLanguage()`.
 
-- **Problema**: El usuario no distinguía entre un error de la API y una caída de internet.
-- **Solución**: Hemos implementado una detección específica de `NetworkError` en el frontend (`App.jsx`). Si la conexión falla, se muestra un mensaje claro: _"No se pudo conectar con el servidor. Revisa tu conexión a internet"_, diferenciándolo de otros errores de datos.
+### 3.5 Algoritmo de Búsqueda (`Search.jsx`)
 
-### F. Experiencia de Usuario (Mejoras Visuales)
+Algoritmo de filtrado cliente que:
 
-- **Fondos Dinámicos**: Se ha integrado una imagen de fondo que cambia de forma aleatoria (vía LoremFlickr), aportando un toque visual único.
-- **Accesibilidad**: Se han añadido `tooltips` en todos los iconos y etiquetas `aria-label` para mejorar la accesibilidad de la aplicación.
-- **Histórico de Búsquedas**: Se guardan las últimas 5 búsquedas en el `localStorage` para facilitar el acceso rápido a los municipios frecuentes.
-- **Feedback Instantáneo**: El sistema de gestión de errores es reactivo, limpiando los mensajes en cuanto el usuario interactúa con el buscador.
+1.  **Normaliza**: Elimina acentos y mayúsculas (`Málaga` -> `malaga`).
+2.  **Multi-campo**: Busca en Nombre, Provincia e ID.
+3.  **Ranking**: Prioriza coincidencias exactas y por inicio de palabra.
 
-## 5. Conclusiones
+---
 
-Este proyecto ha sido una excelente oportunidad para profundizar en la arquitectura **Frontend-Backend desacoplada**. He aprendido a:
+## 4. Desafíos y Soluciones
 
-1.  **Gestionar la asincronía real**: Consumir APIs externas no es solo hacer `fetch`; implica manejar tiempos de espera, errores de red y formatos de datos inesperados (como el charset de AEMET).
-2.  **Modularizar con React**: La separación en componentes (`Search`, `WeatherCard`, etc.) hace que el código sea mantenible y escalable.
-3.  **Proteger secretos**: La importancia del Middleware en Node.js para ocultar la API Key y transformar datos antes de que lleguen al cliente.
-4.  **Cuidar la UX**: Pequeños detalles como el filtrado de horas pasadas, los tooltips de accesibilidad o el modo oscuro mejoran drásticamente la percepción de calidad de la aplicación.
+Durante el desarrollo, se resolvieron varios retos:
 
-En definitiva, se ha construido una aplicación robusta, funcional y estéticamente moderna que cumple con todos los requisitos didácticos del módulo.
+- **Codificación (Charset)**: AEMET envía en `ISO-8859-1`. Se implementó decodificación a `UTF-8` en el Backend para corregir tildes.
+- **Datos Horarios**: Se creó un adaptador (`dataAdapter.js`) para aplanar la estructura de AEMET y un componente con scroll para visualizar 24h sin saturar.
+- **API Key Segura**: Se movió toda la petición a AEMET al backend, usando variables de entorno `.env`, para que la clave nunca llegue al navegador.
+
+---
+
+## 5. Instalación
+
+1.  **Backend**: `cd backend` -> `npm install` -> Renombrar `.env.example` a `.env` -> `npm run dev`.
+2.  **Frontend**: `cd frontend` -> `npm install` -> `npm run dev`.

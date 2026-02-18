@@ -56,33 +56,44 @@ export const Search = ({ onSelect, onSearchChange }) => {
     }
   }, []); // [] indica que se ejecute solo al montar el componente
 
-  // Lógica de filtrado con ordenamiento mejorado
+  // Lógica de filtrado con ordenamiento mejorado/inteligente
   useEffect(() => {
-    // Si la consulta es muy corta, no mostramos resultados y salimos del efecto
+    // Si la consulta es muy corta (menos de 2 letras), no mostramos resultados para evitar listas enormes
     if (query.length < 2) {
       setResults([]);
       return;
     }
 
-    // Función para normalizar texto (quitar tildes, minúsculas, caracteres especiales)
+    /*
+     * Función CLAVE para la búsqueda insensible a formato.
+     * 1. .toLowerCase(): Convierte todo a minúsculas (Málaga -> málaga)
+     * 2. .normalize("NFD"): Descompone letras con acentos (á -> a + ´)
+     * 3. .replace(...): Elimina los diacríticos (acentos) (a + ´ -> a)
+     * 4. .replace(...): Elimina guiones y comas para facilitar búsqueda
+     * Resultado: "Málaga" -> "malaga", "Castellón" -> "castellon"
+     */
     const normalize = (str) =>
       str
-        .toLowerCase() // pasamos a minúsculas
-        .normalize("NFD") // normalizamos el texto
-        .replace(/[\u0300-\u036f]/g, "") // quitamos los acentos
-        .replace(/[,\-]/g, " "); // quitamos las comas y los guiones
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[,\-]/g, " ");
 
-    const normalizedQuery = normalize(query); // normalizamos la consulta
+    const normalizedQuery = normalize(query); // Normalizamos lo que el usuario escribió
 
-    // Filtramos los municipios
+    // Filtramos la lista completa de municipios
     const filtered = municipalities
       .filter((m) => {
-        const normName = normalize(m.nombre); // normalizamos el nombre
-        const normProv = normalize(m.provincia || ""); // normalizamos la provincia
-        const id = m.id || ""; // obtenemos el id
-        const cleanId = id.replace("id", ""); // quitamos "id" del id
+        const normName = normalize(m.nombre); // Normalizamos nombre municipio
+        const normProv = normalize(m.provincia || ""); // Normalizamos provincia
+        const id = m.id || "";
+        const cleanId = id.replace("id", ""); // Normalizamos ID
 
-        // Buscamos coincidencia en nombre, provincia o ID
+        // Lógica de Coincidencia (OR):
+        // Se añade si el término de búsqueda está incluido en:
+        // - Nombre del municipio O
+        // - Nombre de la provincia O
+        // - Código del municipio (con o sin prefijo 'id')
         return (
           normName.includes(normalizedQuery) ||
           normProv.includes(normalizedQuery) ||
@@ -91,22 +102,25 @@ export const Search = ({ onSelect, onSearchChange }) => {
         );
       })
 
-      // Ordenamos los resultados
+      // Ordenamos los resultados para mostrar los más relevantes primero
       .sort((a, b) => {
         const normA = normalize(a.nombre);
         const normB = normalize(b.nombre);
 
-        // 1. Coincidencia exacta (Nombre) aparece primero
+        // 1. Prioridad Máxima: Coincidencia EXACTA del nombre
+        // Si busco "Mula", quiero que salga "Mula" antes que "Mulhacen"
         if (normA === normalizedQuery && normB !== normalizedQuery) return -1;
         if (normB === normalizedQuery && normA !== normalizedQuery) return 1;
 
-        // 2. Coincidencia exacta de Provincia (ej. buscar 'Murcia' muestra Cartagena)
+        // 2. Prioridad Media: Coincidencia EXACTA de Provincia
+        // Si busco "Murcia", que salgan primero los pueblos DE Murcia, no los que se llaman "Murcia..."
         const provA = normalize(a.provincia || "");
         const provB = normalize(b.provincia || "");
         if (provA === normalizedQuery && provB !== normalizedQuery) return -1;
         if (provB === normalizedQuery && provA !== normalizedQuery) return 1;
 
-        // 3. Empieza con la consulta (Nombre)
+        // 3. Prioridad Baja: El nombre EMPIEZA por lo que busco
+        // "Car" -> "Cartagena" antes que "Alcaraz"
         if (
           normA.startsWith(normalizedQuery) &&
           !normB.startsWith(normalizedQuery)
@@ -120,10 +134,10 @@ export const Search = ({ onSelect, onSearchChange }) => {
 
         return 0;
       })
-      .slice(0, 10); // Limitamos a 10 resultados
+      .slice(0, 10); // Limitamos a 10 resultados para no saturar la UI
 
     setResults(filtered);
-  }, [query, municipalities]); // Se ejecuta cuando cambia la consulta o los municipios
+  }, [query, municipalities]);
 
   // Manejador del cambio en el input
   const handleInputChange = (e) => {
