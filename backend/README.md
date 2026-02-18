@@ -52,7 +52,7 @@ backend/
 ├── routes/
 │   └── weatherRoutes.js       # Definición de endpoints de la API (/api/...)
 ├── services/
-│   └── aemetService.js        # Lógica de conexión con la API de AEMET (Paso 1 y 2)
+│   └── aemetService.js        # Lógica de conexión con la API de AEMET
 ├── .env                       # Variables de entorno (NO subir al repo)
 ├── .env.example               # Plantilla de variables de entorno
 ├── server.js                  # Punto de entrada y configuración del servidor
