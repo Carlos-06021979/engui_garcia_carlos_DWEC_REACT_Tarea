@@ -26,6 +26,7 @@ export const WeatherForecast = ({ data }) => {
     }
   };
 
+  return (
     /*
     Contenedor principal de predicción a 5 días:
     - mt-6: margen superior para separar
@@ -48,7 +49,7 @@ export const WeatherForecast = ({ data }) => {
       - gap-4: espacio entre celdas del grid
       */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        {days.map((day, index) => {
+        {data.prediccion.dia.map((day, index) => {
           const date = new Date(day.fecha);
           // Format: "Lun 16"
           const dayName = date.toLocaleDateString("es-ES", {
@@ -57,9 +58,7 @@ export const WeatherForecast = ({ data }) => {
           });
 
           return (
-            <div
-              key={index}
-            >
+            <div key={index}>
               <span className="text-slate-500 dark:text-slate-400 font-medium capitalize mb-2">
                 {dayName}
               </span>

@@ -187,12 +187,6 @@ export const Search = ({ onSelect, onSearchChange }) => {
     - z-50: asegura que el buscador esté por encima de otros elementos (z-index alto)
     */
     <div ref={wrapperRef} className="relative w-full max-w-md mx-auto z-50">
-      {/* Contenedor relativo para posicionar el dropdown absoluto de resultados:
-      - relative: establece el contexto de posicionamiento
-      - w-full max-w-md: ancho completo hasta un máximo
-      - mx-auto: centrado horizontalmente
-      - z-50: asegura que el buscador esté por encima de otros elementos (z-index alto) */}
-
       <div className="relative group">
         {/* Icono de búsqueda a la izquierda */}
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -213,7 +207,6 @@ export const Search = ({ onSelect, onSearchChange }) => {
           - transition-all shadow-sm: transiciones suaves y sombra sutil
           */
           className="block w-full pl-10 pr-10 py-3 border border-slate-300 dark:border-slate-600 rounded-xl leading-5 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 sm:text-sm transition-all shadow-sm"
-
           /*
           Placeholder dinámico:
           - Muestra "Cargando..." mientras carga los municipios
@@ -234,12 +227,12 @@ export const Search = ({ onSelect, onSearchChange }) => {
             - flex items-center: centrado verticalmente
             - cursor-pointer: cursor de mano al pasar por encima
             */
-            className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"  
+            className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
             /*
             Manejador del clic en el botón de borrar:
             - clearSearch: función que limpia la búsqueda
             */
-            onClick={clearSearch} 
+            onClick={clearSearch}
           >
             {/*
             Icono de borrar (X):
@@ -282,7 +275,6 @@ export const Search = ({ onSelect, onSearchChange }) => {
                   - border-b: línea separadora
                   */
                   className="cursor-pointer select-none relative py-3 pl-3 pr-9 hover:bg-slate-50 dark:hover:bg-slate-700 group transition-colors border-b border-slate-100 dark:border-slate-700/50 last:border-0"
-
                   /*
                   Manejador del clic en el elemento de historial:
                   - handleSelect: función que selecciona el municipio
@@ -319,7 +311,7 @@ export const Search = ({ onSelect, onSearchChange }) => {
                       - text-slate-700 dark:text-slate-200: color
                       */}
                       <span className="font-medium block text-slate-700 dark:text-slate-200">
-                        {municipio.nombre} 
+                        {municipio.nombre}
                       </span>
                     </div>
                   </div>
@@ -342,14 +334,12 @@ export const Search = ({ onSelect, onSearchChange }) => {
                 - border-b: separador inferior
                 */
                 className="cursor-pointer select-none relative py-3 pl-3 pr-9 hover:bg-blue-50 dark:hover:bg-slate-700 group transition-colors border-b border-slate-50 dark:border-slate-700/50 last:border-0"
-
                 /*
                 Manejador del clic en el elemento de resultado:
                 - handleSelect: función que selecciona el municipio
                 */
                 onClick={() => handleSelect(municipio)}
               >
-
                 {/*
                 Contenedor de elementos:
                 - flex items-center: centrado verticalmente
@@ -367,7 +357,6 @@ export const Search = ({ onSelect, onSearchChange }) => {
                   - transition-colors: animación suave
                   */}
                   <span className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg mr-3 text-blue-600 dark:text-blue-400 group-hover:bg-blue-200 dark:group-hover:bg-blue-800 transition-colors">
-
                     {/*
                     Icono de ubicación:
                     - MapPin: icono de ubicación
@@ -401,7 +390,6 @@ export const Search = ({ onSelect, onSearchChange }) => {
 
           {/* Mensaje de No Resultados */}
           {showNoResults && (
-            
             /*
             Elemento de no resultados:
             - cursor-default: cursor por defecto
