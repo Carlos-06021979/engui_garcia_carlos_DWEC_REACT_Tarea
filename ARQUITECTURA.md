@@ -80,7 +80,7 @@ Servidor **Node.js + Express** que actúa como intermediario (Proxy) para oculta
 
 ---
 
-## 3. ¿Cómo se complementan? (Flujo de Datos)
+### 3. ¿Cómo se complementan? (Flujo de Datos)
 
 1.  **Inicio**: El usuario abre la web. `App.jsx` carga. `Header` y `Search` se muestran.
 2.  **Búsqueda**: El usuario escribe "Madrid". `Search.jsx` pide lista al Backend (`/api/municipios`).
@@ -92,3 +92,62 @@ Servidor **Node.js + Express** que actúa como intermediario (Proxy) para oculta
 8.  **Renderizado**: `useWeather` actualiza `weatherData`. React detecta el cambio y pinta `WeatherCard`, `HourlyForecast` y `WeatherForecast` con la nueva información.
 
 Esta arquitectura separa responsabilidades: el **Frontend** solo se preocupa de mostrar datos bonitos, y el **Backend** se preocupa de conseguirlos de forma segura.
+
+---
+
+## 4. Configuración y Estilos (Tailwind CSS)
+
+Para estilizar la aplicación se ha utilizado **Tailwind CSS**. La configuración seguida es la siguiente:
+
+1.  **Instalación**: Se usó `npm` para instalar las dependencias de desarrollo necesarias: `tailwindcss`, `postcss` y `autoprefixer`.
+2.  **Configuración (`tailwind.config.js`)**: Se definió qué archivos escanear en busca de clases (propiedad `content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"]`). Esto permite que Tailwind elimine el CSS no utilizado en producción (Tree Shaking).
+3.  **Directivas (`index.css`)**: Se añadieron las 3 capas base de Tailwind (`@tailwind base`, `@tailwind components`, `@tailwind utilities`) al archivo CSS principal.
+4.  **Integración**: Vite, mediante PostCSS, procesa estos archivos en tiempo de compilación, generando una hoja de estilos optimizada y minificada lista para el navegador.
+
+---
+
+## 5. Implementación del Tema (Oscuro/Claro)
+
+Para manejar el cambio de tema se ha seguido la estrategia de clases de Tailwind (`darkMode: 'class'`) gestionada por un Contexto de React.
+
+### 5.1 ThemeContext (`/context/ThemeContext.jsx`)
+
+Este contexto actúa como la fuente de verdad del estado del tema.
+
+- **Estado**: Guarda el tema actual (`'light'` o `'dark'`) en una variable de estado.
+- **Persistencia**: Al cargar, comprueba `localStorage` o las preferencias del sistema operativo (`prefers-color-scheme`) para decidir el tema inicial.
+- **Efecto**: Un `useEffect` escucha cambios en el estado y añade o quita la clase `dark` del elemento `<html>` del DOM (`document.documentElement.classList`).
+
+### 5.2 Estilos en Componentes
+
+Gracias a la clase `dark` en el `html`, Tailwind permite aplicar estilos condicionales usando el modificador `dark:`:
+
+```jsx
+// Ejemplo: Fondo blanco en claro, gris oscuro en oscuro
+<div className="bg-white dark:bg-slate-800 ...">
+  <h2 className="text-slate-900 dark:text-white ...">Título</h2>
+</div>
+```
+
+Cuando el contexto cambia el tema, el DOM se actualiza y los estilos cambian automáticamente.
+
+---
+
+## 6. Internacionalización (i18n)
+
+La aplicación soporta múltiples idiomas (actualmente Español e Inglés) mediante una implementación ligera de i18n sin librerías externas pesadas.
+
+### 6.1 LanguageContext (`/context/LanguageContext.jsx`)
+
+- **Estado**: Mantiene el idioma seleccionado (`'es'` o `'en'`).
+- **Diccionario**: Importa un objeto JSON con todas las traducciones desde `/data/translations.js`.
+- **Función `t(key)`**: Es la función que consumen los componentes. Recibe una clave (ej: `"humidity"`) y devuelve el texto en el idioma actual. Si no encuentra la clave, devuelve la propia clave como fallback.
+
+### 6.2 Uso en Componentes
+
+Los componentes se suscriben al contexto con el hook `useLanguage()`:
+
+```jsx
+const { t } = useLanguage();
+return <p>{t("humidity")}</p>; // Renderiza "Humedad" o "Humidity"
+```
