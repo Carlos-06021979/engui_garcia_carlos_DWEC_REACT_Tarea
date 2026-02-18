@@ -99,6 +99,26 @@ Algoritmo de filtrado cliente que:
 2.  **Multi-campo**: Busca en Nombre, Provincia e ID.
 3.  **Ranking**: Prioriza coincidencias exactas y por inicio de palabra.
 
+### 3.6 Creación del Custom Hook (`useWeather.js`)
+
+Para limpiar el componente principal `App.jsx` y separar la lógica de la vista, se creó este hook personalizado siguiendo estos pasos:
+
+1.  **Encapsulamiento de Estado**: Se movieron todos los `useState` (`weatherData`, `loading`, `error`, etc.) desde `App.jsx` al hook.
+2.  **Lógica de Negocio**: Se trasladó la función `handleSelection` (que llama a la API y gestiona errores) dentro del hook.
+3.  **Exposición de API**: El hook retorna un objeto con solo lo necesario para la vista:
+    `javascript
+    return {
+      selectedMunicipality, // Estado del municipio actual
+      weatherData,          // Datos de AEMET
+      hourlyData,           // Datos por horas
+      loading,              // Booleano de carga
+      error,                // Mensaje de error si lo hay
+      handleSelection,      // Función para cambiar de municipio
+      clearError            // Función para limpiar errores
+    };
+    `
+    De esta forma, `App.jsx` pasa de tener 100 líneas de lógica compleja a simplemente llamar a `const { ... } = useWeather();`.
+
 ---
 
 ## 4. Desafíos y Soluciones
