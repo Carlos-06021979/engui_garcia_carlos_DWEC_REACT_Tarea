@@ -1,16 +1,81 @@
-# React + Vite
+# Aplicación Meteorológica (React + Node.js)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Proyecto desarrollado para la asignatura de Desarrollo Web en Entorno Cliente (DWEC). Es una aplicación de consulta meteorológica que consume datos de la API de AEMET, con un frontend moderno en React y un backend proxy en Node.js.
 
-Currently, two official plugins are available:
+## 🚀 Características Principales
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Búsqueda de Municipios:** Autocompletado y búsqueda por nombre.
+- **Predicción Meteorológica:**
+  - Estado actual (Temperatura, humedad, viento, UV, sensación térmica).
+  - Predicción por horas (Gráfico/Iconos deslizables).
+  - Predicción a 7 días.
+- **Diseño Responsivo y Moderno:**
+  - UI construida con Tailwind CSS.
+  - Modo Oscuro/Claro automático.
+  - Animaciones fluidas y fondos dinámicos según el municipio.
+- **Internacionalización:** Soporte para Español e Inglés (i18n).
 
-## React Compiler
+## 🛠️ Arquitectura y Refactorización
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+El código ha sido refactorizado para seguir principios de arquitectura limpia y modularidad:
 
-## Expanding the ESLint configuration
+### Frontend (`/frontend`)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Componentes Modulares:**
+  - `StatCard.jsx`: Componente reutilizable para tarjetas de estadísticas.
+  - `WeatherCard.jsx`: Tarjeta principal del clima actual.
+  - `HourlyForecast.jsx`: Predicción por horas con scroll horizontal.
+  - `WeatherForecast.jsx`: Lista de predicción diaria.
+- **Hooks Personalizados:**
+  - `useWeather.js`: Centraliza toda la lógica de estado, llamadas a API y manejo de errores, dejando `App.jsx` limpio.
+- **Servicios y Adaptadores:**
+  - `dataAdapter.js`: Transforma los datos crudos de AEMET en formatos consumibles por los componentes.
+  - `weatherUtils.js`: Utilidades puras para formateo de fechas y selección de iconos.
+- **Contextos:**
+  - `LanguageContext`: Manejo global del idioma.
+  - `ThemeContext`: Manejo del tema (Oscuro/Claro).
+
+### Backend (`/backend`)
+
+Actúa como proxy para evitar problemas de CORS y proteger la API Key de AEMET.
+
+- **Endpoints:**
+  - `GET /api/municipios`: Retorna lista filtrada de municipios.
+  - `GET /api/prediccion-semanal/:codigo`: Proxy a AEMET (Predicción diaria).
+  - `GET /api/prediccion-horas/:codigo`: Proxy a AEMET (Predicción horaria).
+- **Servicios:**
+  - `aemetService.js`: Lógica de comunicación con la API externa.
+- **Datos:**
+  - `codigosProvincia.js`: Mapeo estático de códigos de provincia.
+
+## 📦 Instalación y Uso
+
+### Prerrequisitos
+
+- Node.js (v16 o superior)
+- NPM
+
+### Pasos
+
+1.  **Backend:**
+
+    ```bash
+    cd backend
+    npm install
+    # Crear archivo .env con: AEMET_API_KEY=tu_api_key
+    npm start
+    ```
+
+2.  **Frontend:**
+
+    ```bash
+    cd frontend
+    npm install
+    npm run dev
+    ```
+
+3.  Abrir navegador en `http://localhost:5173`.
+
+## 📝 Autor
+
+Carlos Enguí García - DWEC 2025-26
