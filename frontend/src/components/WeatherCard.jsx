@@ -134,13 +134,18 @@ export const WeatherCard = ({ data, municipality }) => {
                 {/* Humidity */}
                 <div
                   /* 
-                  Tarjeta de estadística:
+                  Tarjeta de estadística (Humedad):
                   - bg-slate-50: fondo muy claro
-                  - backdrop-blur-sm: efecto cristal
+                  - dark:bg-slate-700/30: fondo oscuro semitransparente
+                  - p-4: padding interno
+                  - rounded-2xl: bordes redondeados
+                  - backdrop-blur-sm: efecto de desenfoque de fondo (glassmorphism)
+                  - flex items-center: alinea icono y texto
                   */
                   className="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-2xl flex items-center gap-3 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/50 backdrop-blur-sm"
                   title={t("humidity")}
                 >
+                  {/* Icono de humedad con fondo azul */}
                   <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg text-blue-600 dark:text-blue-400">
                     <Droplets size={20} aria-label={t("humidity")} />
                   </div>

@@ -74,20 +74,27 @@ function App() {
     - min-h-screen: ocupa al menos toda la altura de la pantalla
     - bg-slate-50: fondo claro por defecto
     - dark:bg-slate-900: fondo oscuro en modo dark
-    - transition-colors: suaviza el cambio de tema
+    - transition-colors duration-300: suaviza el cambio de tema
+    - pb-10: padding inferior
     */
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-300 pb-10">
       <Header />
 
+      {/* Margen superior para separar del header */}
       <main className="container mx-auto px-4 mt-8">
         {/* 
         Tarjeta del buscador y título:
-        - bg-white dark:bg-slate-800: fondo blanco/gris oscuro
-        - p-8 rounded-2xl shadow-lg: espaciado interno, bordes redondeados, sombra
-        - max-w-4xl mx-auto: ancho máximo y centrado horizontal
-        - border...: borde sutil para separar del fondo
+        - bg-white: fondo blanco en modo claro
+        - dark:bg-slate-800: fondo gris oscuro en modo oscuro
+        - p-8: padding interno generoso
+        - rounded-2xl: bordes muy redondeados
+        - shadow-lg: sombra pronunciada para dar profundidad
+        - text-center: alinea el texto al centro
+        - max-w-4xl mx-auto: limita el ancho y centra horizontalmente
+        - border...: borde sutil paara separar
         */}
         <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg text-center max-w-4xl mx-auto border border-slate-200 dark:border-slate-700 transition-colors mb-8">
+          {/* Título principal traducible */}
           <h2 className="text-3xl font-bold mb-6 text-slate-800 dark:text-white">
             {t("title")}
           </h2>
@@ -105,29 +112,45 @@ function App() {
             </p>
           )}
 
+          {/* Si está cargando, mostramos el spinner */}
           {loading && (
             <div className="flex justify-center py-10">
-              {/* Spinner de carga: animate-spin hace que gire */}
+              {/* Spinner de carga: animate-spin hace que gire infinitamente */}
               <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
             </div>
           )}
 
+          {/* Si hay error, mostramos el mensaje */}
           {error && (
-            /* Mensaje de error con fondo rojo suave */
+            /* 
+            Mensaje de error:
+            - p-4: padding
+            - bg-red-50: fondo rojo muy claro
+            - text-red-600: texto rojo
+            - rounded-xl: bordes redondeados
+            */
             <div className="p-4 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl">
               {error}
             </div>
           )}
         </div>
 
+        {/* Si hay datos y no está cargando, mostramos los resultados */}
         {weatherData && !loading && (
-          /* Contenedor de resultados con animación de entrada (fade-in) */
+          /* 
+          Contenedor de resultados:
+          - animate-fade-in: animación de entrada suave
+          - space-y-6: separación vertical entre hijos de 1.5rem
+          */
           <div className="animate-fade-in space-y-6">
+            {/* Tarjeta del clima actual */}
             <WeatherCard
               data={weatherData}
               municipality={selectedMunicipality}
             />
+            {/* Pronóstico por horas (si existe) */}
             {hourlyData && <HourlyForecast data={hourlyData} />}
+            {/* Pronóstico a 7 días */}
             <WeatherForecast data={weatherData} />
           </div>
         )}

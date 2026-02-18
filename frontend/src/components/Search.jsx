@@ -151,12 +151,15 @@ export const Search = ({ onSelect, onSearchChange }) => {
 
   return (
     /*
-    Contenedor relativo para posicionar el dropdown absoluto:
-    - relative: contexto de posicionamiento
-    - z-50: asegura que el buscador esté por encima de otros elementos
+    Contenedor relativo para posicionar el dropdown absoluto de resultados:
+    - relative: establece el contexto de posicionamiento
+    - w-full max-w-md: ancho completo hasta un máximo
+    - mx-auto: centrado horizontalmente
+    - z-50: asegura que el buscador esté por encima de otros elementos (z-index alto)
     */
     <div ref={wrapperRef} className="relative w-full max-w-md mx-auto z-50">
       <div className="relative group">
+        {/* Icono de búsqueda a la izquierda */}
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <SearchIcon className="h-5 w-5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
         </div>
@@ -164,9 +167,14 @@ export const Search = ({ onSelect, onSearchChange }) => {
           type="text"
           /* 
           Input de búsqueda estilizado:
-          - block w-full: ocupa todo el ancho
-          - pl-10: padding izquierdo para el icono
-          - focus:ring-4: anillo de enfoque suave
+          - block w-full: ocupa todo el ancho disponible
+          - pl-10: padding izquierdo para dejar sitio al icono
+          - pr-10: padding derecho para dejar sitio al botón de borrar
+          - py-3: padding vertical generoso
+          - border border-slate-300: borde fino gris
+          - rounded-xl: bordes moderadamente redondeados
+          - focus:ring-4: anillo de enfoque azul suave
+          - focus:border-blue-500: borde azul al enfocar
           - transition-all shadow-sm: transiciones suaves y sombra sutil
           */
           className="block w-full pl-10 pr-10 py-3 border border-slate-300 dark:border-slate-600 rounded-xl leading-5 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 sm:text-sm transition-all shadow-sm"
@@ -174,7 +182,7 @@ export const Search = ({ onSelect, onSearchChange }) => {
           value={query}
           onChange={handleInputChange}
           onFocus={() => setIsOpen(true)}
-          disabled={loading}
+          disabled={loading} // Desactivado mientras carga
         />
         {query && (
           <div
@@ -189,13 +197,15 @@ export const Search = ({ onSelect, onSearchChange }) => {
       {isOpen && (
         /*
         Dropdown de resultados (Lista desplegable):
-        - absolute z-10: flota sobre el contenido
-        - mt-2: margen superior
-        - shadow-xl: sombra pronunciada
-        - max-h-60 overflow-auto: altura máxima con scroll
+        - absolute z-10: posicionamiento absoluto flotante sobre el contenido
+        - mt-2: margen superior para separar del input
+        - w-full: mismo ancho que el input
+        - shadow-xl: sombra muy pronunciada para destacar
+        - max-h-60 overflow-auto: altura máxima limita con barra de desplazamiento si es necesario
+        - rounded-xl: bordes redondeados
         */
         <ul className="absolute z-10 mt-2 w-full bg-white dark:bg-slate-800 shadow-xl max-h-60 rounded-xl py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm border border-slate-100 dark:border-slate-700">
-          {/* History Section */}
+          {/* Sección de Historial */}
           {showHistory && (
             <>
               <li className="px-3 py-2 text-xs font-semibold text-slate-400 uppercase tracking-wider bg-slate-50 dark:bg-slate-700/50">

@@ -27,9 +27,12 @@ export const WeatherForecast = ({ data }) => {
   };
 
     /*
-    Contenedor de predicción a 5 días:
-    - mt-6: margen superior
-    - bg-white: fondo tarjeta
+    Contenedor principal de predicción a 5 días:
+    - mt-6: margen superior para separar
+    - bg-white: fondo blanco para la tarjeta
+    - rounded-3xl: bordes redondeados modernos
+    - shadow-lg: sombra para dar elevación
+    - p-6: espaciado interno
     - animate-slide-up: animación de entrada
     */
     <div className="w-full max-w-4xl mx-auto mt-6 bg-white dark:bg-slate-800 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-700 p-6 animate-slide-up">
@@ -38,10 +41,11 @@ export const WeatherForecast = ({ data }) => {
       </h3>
 
       {/* 
-      Grid responsivo:
-      - grid-cols-2: 2 columnas en móvil
-      - md:grid-cols-5: 5 columnas en pantallas medianas/grandes
-      - gap-4: espacio entre tarjetas
+      Grid responsivo para los días:
+      - grid: activa grid layout
+      - grid-cols-2: por defecto (móvil) 2 columnas
+      - md:grid-cols-5: en pantallas medianas (md) cambia a 5 columnas (una por día)
+      - gap-4: espacio entre celdas del grid
       */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         {days.map((day, index) => {
