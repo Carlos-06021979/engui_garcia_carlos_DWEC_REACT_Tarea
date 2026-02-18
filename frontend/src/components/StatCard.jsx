@@ -1,16 +1,19 @@
-/**
+/*
  * Componente reutilizable para mostrar una estadística individual del clima.
- * @param {Object} props
- * @param {JSX.Element} props.icon - Icono a mostrar.
- * @param {string} props.label - Etiqueta o título de la estadística.
- * @param {string|number} props.value - Valor de la estadística.
- * @param {string} props.bgColor - Clase de fondo para el contenedor del icono (opcional).
- * @param {string} props.textColor - Clase de color de texto para el icono (opcional).
+  props
+  props.icon - Icono a mostrar.
+  props.label - Etiqueta o título de la estadística.
+  props.value - Valor de la estadística.
+  props.bgColor - Clase de fondo para el contenedor del icono (opcional).
+  props.textColor - Clase de color de texto para el icono (opcional).
  */
 export const StatCard = ({
   icon,
   label,
   value,
+
+  // Clases de fondo y texto para el icono
+  // Por defecto, el icono será azul en modo claro y azul oscuro en modo oscuro
   bgColor = "bg-blue-100 dark:bg-blue-900/50",
   textColor = "text-blue-600 dark:text-blue-400",
 }) => {
@@ -30,13 +33,22 @@ export const StatCard = ({
       - backdrop-blur-sm: aplica un desenfoque sutil al fondo (efecto cristal)
       */
       className="bg-slate-50 dark:bg-slate-700/30 p-4 rounded-2xl flex items-center gap-3 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/50 backdrop-blur-sm"
-      title={label}
+      title={label} // Muestra la etiqueta al pasar el ratón
     >
+      {/* Icono de la estadística */}
       <div className={`p-2 rounded-lg ${bgColor} ${textColor}`}>{icon}</div>
       <div>
+        {/* Etiqueta de la estadística */}
+        {/* text-xs: tamaño de fuente pequeño (12px) */}
+        {/* text-slate-500: color gris medio */}
+        {/* dark:text-slate-400: color gris medio en modo oscuro */}
         <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
+        {/* Valor de la estadística */}
+        {/* font-semibold: fuente negrita */}
+        {/* text-slate-700: color gris oscuro */}
+        {/* dark:text-slate-200: color gris muy oscuro en modo oscuro */}
         <p className="font-semibold text-slate-700 dark:text-slate-200">
-          {value}
+          {value} {/* Muestra el valor de la estadística */}
         </p>
       </div>
     </div>

@@ -107,17 +107,27 @@ Para limpiar el componente principal `App.jsx` y separar la lógica de la vista,
 2.  **Lógica de Negocio**: Se trasladó la función `handleSelection` (que llama a la API y gestiona errores) dentro del hook.
 3.  **Exposición de API**: El hook retorna un objeto con solo lo necesario para la vista:
     `javascript
-    return {
-      selectedMunicipality, // Estado del municipio actual
-      weatherData,          // Datos de AEMET
-      hourlyData,           // Datos por horas
-      loading,              // Booleano de carga
-      error,                // Mensaje de error si lo hay
-      handleSelection,      // Función para cambiar de municipio
-      clearError            // Función para limpiar errores
+return {
+  selectedMunicipality, // Estado del municipio actual
+  weatherData,          // Datos de AEMET
+  hourlyData,           // Datos por horas
+  loading,              // Booleano de carga
+  error,                // Mensaje de error si lo hay
+  handleSelection,      // Función para cambiar de municipio
+  clearError            // Función para limpiar errores
+};
+`
     };
-    `
+    ```
     De esta forma, `App.jsx` pasa de tener 100 líneas de lógica compleja a simplemente llamar a `const { ... } = useWeather();`.
+    ```
+
+### 3.7 Tooltips y Accesibilidad
+
+Se ha priorizado la accesibilidad y la sencillez en la implementación de tooltips:
+
+1.  **Nativo**: Se utiliza el atributo estándar `title` de HTML en los iconos y botones. Esto garantiza que todos los navegadores muestren la descripción al pasar el ratón sin necesidad de librerías JavaScript pesadas.
+2.  **Lectores de Pantalla**: Los iconos incluyen atributos `aria-label` o textos ocultos para asegurar que las personas que usan lectores de pantalla entiendan el significado de cada elemento visual (ej: "Humedad", "Viento").
 
 ---
 

@@ -1,3 +1,4 @@
+// Objeto que contiene las traducciones de los textos de la aplicación
 export const translations = {
   es: {
     title: "El Tiempo en España",
@@ -16,7 +17,7 @@ export const translations = {
     hourly_forecast: "Previsión por horas",
     daily_forecast: "Previsión 7 días",
     forecast: "Predicción 7 días",
-    forecast_title: "Predicción 7 días", // AEMET style
+    forecast_title: "Predicción 7 días",
     show_past_hours: "Mostrar horas pasadas",
     hide_past_hours: "Ocultar horas pasadas",
     department: "Departamento de Desarrollo Web",
