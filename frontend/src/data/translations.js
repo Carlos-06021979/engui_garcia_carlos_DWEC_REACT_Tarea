@@ -21,6 +21,8 @@ export const translations = {
     hide_past_hours: "Ocultar horas pasadas",
     department: "Departamento de Desarrollo Web",
     student: "Carlos Enguí García",
+    switch_language_tooltip: "Cambiar idioma",
+    toggle_theme_tooltip: "Cambiar tema",
   },
   en: {
     title: "Weather in Spain",
@@ -46,5 +48,7 @@ export const translations = {
     hide_past_hours: "Hide past hours",
     department: "Web Development Department",
     student: "Carlos Enguí García",
+    switch_language_tooltip: "Switch language",
+    toggle_theme_tooltip: "Toggle theme",
   },
 };

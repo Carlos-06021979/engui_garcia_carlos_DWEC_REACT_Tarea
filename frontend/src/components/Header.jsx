@@ -46,8 +46,8 @@ export const Header = () => {
         <div className="flex items-center gap-4">
           {/* Language Toggle */}
           <button
+            // Al hacer clic en el botón, se cambia el idioma
             onClick={() => setLanguage(language === "es" ? "en" : "es")}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-700 dark:text-slate-200"
             /* 
             Botón de idioma:
             - flex items-center gap-2: alinea icono y texto
@@ -56,9 +56,20 @@ export const Header = () => {
             - hover:bg...: cambio de fondo al pasar el ratón (claro/oscuro)
             - text-slate...: color del texto según tema
             */
-            title="Switch Language"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-slate-700 dark:text-slate-200"
+            title={t("switch_language_tooltip")} // Tooltip que indica el cambio de idioma
           >
+            {/* 
+            Icono de idioma de lucide-react:
+            - Languages: icono de idiomas
+            - size={20}: tamaño del icono
+            */}
             <Languages size={20} />
+            {/* 
+            Texto del idioma:
+            - font-medium: fuente mediana
+            - uppercase: texto en mayúsculas
+            */}
             <span className="font-medium uppercase">{language}</span>
           </button>
 
@@ -73,9 +84,7 @@ export const Header = () => {
             - hover...: fondo al pasar el ratón
             - text...: color del icono (amarillo en oscuro para el sol)
             */
-            title={
-              theme === "light" ? "Activar Modo Oscuro" : "Activar Modo Claro"
-            }
+            title={t("toggle_theme_tooltip")}
           >
             {theme === "light" ? (
               <Moon size={24} className="fill-slate-600" />
