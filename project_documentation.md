@@ -118,9 +118,8 @@ return {
 };
 `
     };
-    ```
-    De esta forma, `App.jsx` pasa de tener 100 líneas de lógica compleja a simplemente llamar a `const { ... } = useWeather();`.
-    ```
+    ``     De esta forma, `App.jsx` pasa de tener 100 líneas de lógica compleja a simplemente llamar a `const { ... } = useWeather();`.
+    ``
 
 ### 3.7 Tooltips y Accesibilidad
 
@@ -145,3 +144,18 @@ Durante el desarrollo, se resolvieron varios retos:
 
 1.  **Backend**: `cd backend` -> `npm install` -> Renombrar `.env.example` a `.env` -> `npm run dev`.
 2.  **Frontend**: `cd frontend` -> `npm install` -> `npm run dev`.
+
+---
+
+## 6. Conclusiones
+
+Este proyecto ha sido fundamental para comprender la arquitectura real de una aplicación web moderna.
+
+**Principales aprendizajes:**
+
+1.  **Seguridad y Arquitectura**: He entendido por qué no se debe llamar a APIs externas desde el cliente (exposición de claves, CORS) y cómo un **Backend Intermediario (Proxy)** soluciona estos problemas de raíz.
+2.  **React Avanzado**: La creación del Hook personalizado `useWeather` me ha enseñado a separar la lógica de la interfaz, haciendo que los componentes sean mucho más limpios y mantenibles.
+3.  **Manejo de Datos Reales**: Los datos de AEMET no venían "listos para usar" (problemas de codificación, estructuras anidadas complejas). Implementar **Adaptadores** (`dataAdapter.js`) ha sido clave para normalizar esta información antes de pintarla.
+4.  **Experiencia de Usuario**: Detalles como la normalización en la búsqueda (ignorar tildes) o el feedback visual de carga mejoran drásticamente la percepción de calidad del software.
+
+En conclusión, la aplicación cumple con todos los requisitos funcionales y técnicos, demostrando un dominio sólido de la pila React + Node.js.

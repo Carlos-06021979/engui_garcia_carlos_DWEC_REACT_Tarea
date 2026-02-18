@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Documentación del Proyecto: Aplicación Meteorológica</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1,
+      h2,
+      h3 {
+        color: #2c3e50;
+      }
+      h1 {
+        border-bottom: 2px solid #2c3e50;
+        padding-bottom: 10px;
+      }
+      h2 {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-top: 30px;
+      }
+      code {
+        background-color: #f4f4f4;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-family: "Consolas", "Monaco", monospace;
+      }
+      pre {
+        background-color: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+        border: 1px solid #ddd;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      li {
+        margin-bottom: 5px;
+      }
+      .author-info {
+        background-color: #e8f4fd;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 30px;
+        border-left: 5px solid #3498db;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Documentación del Proyecto: Aplicación Meteorológica</h1>
+
+    <div class="author-info">
+      <p><strong>Alumno:</strong> Carlos Enguí García</p>
+      <p><strong>Módulo:</strong> Desarrollo Web en Entorno Cliente (DWEC)</p>
+      <p><strong>Curso:</strong> 2025-26</p>
+    </div>
+
+    <h2>1. Introducción y Objetivos</h2>
+    <p>
+      El objetivo principal de este proyecto es desarrollar una aplicación web
+      moderna (Single Page Application) utilizando <strong>React</strong> para
+      el frontend y <strong>Node.js con Express</strong> para el backend. La
+      finalidad es consumir datos reales de la API de
+      <strong>AEMET (Agencia Estatal de Meteorología)</strong> de forma segura y
+      eficiente.
+    </p>
+    <p>
+      Uno de los requisitos más importantes que he tenido en cuenta es la
+      arquitectura de la aplicación. Para no exponer mi clave privada de la API
+      de AEMET en el navegador del cliente (algo inseguro), he implementado un
+      servidor intermedio (proxy) en Node.js. Así, la comunicación sigue este
+      flujo:<br />
+      <code>Cliente React</code> -> <code>Mi Servidor Express</code> ->
+      <code>API AEMET</code>.
+    </p>
+
+    <h2>2. Arquitectura de Archivos y Componentes</h2>
+    <p>
+      A continuación, se detalla la estructura técnica del proyecto y la
+      responsabilidad de cada archivo clave.
+    </p>
+
+    <h3>2.1 Frontend (<code>/frontend/src/</code>)</h3>
+    <p>
+      El frontend es una SPA construida con <strong>React</strong> y estilizada
+      con <strong>Tailwind CSS</strong>.
+    </p>
+
+    <h4>A. Configuración y Entrada</h4>
+    <ul>
+      <li>
+        <strong><code>main.jsx</code></strong
+        >: Punto de entrada de React. Monta la aplicación en el DOM y envuelve a
+        <code>App</code> con los proveedores de contexto
+        (<code>LanguageProvider</code>, <code>ThemeProvider</code>).
+      </li>
+      <li>
+        <strong><code>App.jsx</code></strong
+        >: Componente raíz. Define la estructura visual base (Layout) y orquesta
+        la aplicación usando el hook <code>useWeather</code>. No contiene lógica
+        compleja, solo visualización.
+      </li>
+    </ul>
+
+    <h4>B. Componentes (<code>/components</code>)</h4>
+    <ul>
+      <li>
+        <strong><code>Search.jsx</code></strong
+        >: Buscador de municipios con autocompletado y validación.
+      </li>
+      <li>
+        <strong><code>WeatherCard.jsx</code></strong
+        >: Muestra el clima <strong>actual</strong>. Usa sub-componentes como
+        <code>StatCard</code> para métricas (humedad, viento, UV).
+      </li>
+      <li>
+        <strong><code>HourlyForecast.jsx</code></strong
+        >: Carrusel de predicción por horas (scroll horizontal).
+      </li>
+      <li>
+        <strong><code>WeatherForecast.jsx</code></strong
+        >: Lista vertical de predicción a 7 días.
+      </li>
+      <li>
+        <strong><code>Header.jsx</code></strong
+        >: Barra superior con selector de idioma y tema.
+      </li>
+    </ul>
+
+    <h4>C. Custom Hooks (<code>/hooks</code>)</h4>
+    <ul>
+      <li>
+        <strong><code>useWeather.js</code></strong
+        >: <strong>[CEREBRO]</strong> Centraliza la lógica de negocio. Gestiona
+        estados (<code>loading</code>, <code>error</code>, <code>data</code>),
+        llama al servicio API y expone métodos a la vista.
+      </li>
+    </ul>
+
+    <h4>D. Servicios y Utilidades</h4>
+    <ul>
+      <li>
+        <strong><code>services/api.js</code></strong
+        >: Cliente HTTP que conecta con nuestro Backend.
+      </li>
+      <li>
+        <strong><code>services/dataAdapter.js</code></strong
+        >: <strong>[TRANSFORMADOR]</strong> Convierte el JSON complejo de AEMET
+        en objetos simples para la UI.
+      </li>
+      <li>
+        <strong><code>utils/weatherUtils.jsx</code></strong
+        >: Funciones puras para decidir iconos (<code>getWeatherIcon</code>) y
+        formatear fechas.
+      </li>
+    </ul>
+
+    <h3>2.2 Backend (<code>/backend/</code>)</h3>
+    <p>Servidor <strong>Node.js + Express</strong> que actúa como Proxy.</p>
+    <ul>
+      <li>
+        <strong><code>server.js</code></strong
+        >: Configura Express, CORS y rutas.
+      </li>
+      <li>
+        <strong><code>routes/weatherRoutes.js</code></strong
+        >: Define endpoints públicos (<code>/api/municipios</code>,
+        <code>/api/prediccion/...</code>).
+      </li>
+      <li>
+        <strong><code>services/aemetService.js</code></strong
+        >: Gestiona la comunicación segura con AEMET usando la API Key oculta en
+        <code>.env</code>.
+      </li>
+    </ul>
+
+    <h2>3. Detalles de Implementación Técnica</h2>
+
+    <h3>3.1 Flujo de Datos</h3>
+    <ol>
+      <li><strong>Inicio</strong>: React carga y pide configuración.</li>
+      <li>
+        <strong>Búsqueda</strong>: Usuario escribe ->
+        <code>Search.jsx</code> pide lista a Backend.
+      </li>
+      <li>
+        <strong>Selección</strong>: <code>Search</code> notifica a
+        <code>useWeather</code>.
+      </li>
+      <li>
+        <strong>Petición</strong>: <code>useWeather</code> pide datos al Proxy
+        (Backend).
+      </li>
+      <li><strong>Proxy</strong>: Backend inyecta API Key y pide a AEMET.</li>
+      <li>
+        <strong>Respuesta</strong>: Backend devuelve datos limpios (UTF-8) a
+        Frontend.
+      </li>
+      <li><strong>Render</strong>: React pinta las tarjetas.</li>
+    </ol>
+
+    <h3>3.2 Configuración y Estilos (Tailwind CSS)</h3>
+    <p>
+      Se ha utilizado <strong>Tailwind CSS</strong> instalado vía
+      <code>npm</code>.
+    </p>
+    <ol>
+      <li>
+        <strong>Configuración (<code>tailwind.config.js</code>)</strong>:
+        Configurado el <code>content</code> para escanear archivos
+        <code>.jsx</code> (Tree Shaking).
+      </li>
+      <li>
+        <strong>Estilos</strong>: Inyectados mediante directivas
+        <code>@tailwind</code> en <code>index.css</code>.
+      </li>
+      <li>
+        <strong>Procesamiento</strong>: Vite + PostCSS generan el CSS final
+        optimizado.
+      </li>
+    </ol>
+
+    <h3>3.3 Implementación del Tema (Oscuro/Claro)</h3>
+    <p>Manejado mediante <code>ThemeContext.jsx</code>:</p>
+    <ul>
+      <li>Detecta preferencia del S.O. (<code>prefers-color-scheme</code>).</li>
+      <li>Guarda preferencia en <code>localStorage</code>.</li>
+      <li>
+        Aplica clase <code>.dark</code> al <code>&lt;html&gt;</code>, activando
+        estilos condicionales (<code>dark:bg-slate-800</code>).
+      </li>
+    </ul>
+
+    <h3>3.4 Internacionalización (i18n)</h3>
+    <p>Manejado mediante <code>LanguageContext.jsx</code>:</p>
+    <ul>
+      <li>
+        Sistema ligero con diccionario JSON (<code>translations.js</code>).
+      </li>
+      <li>
+        Función <code>t('clave')</code> disponible en toda la app vía hook
+        <code>useLanguage()</code>.
+      </li>
+    </ul>
+
+    <h3>3.5 Algoritmo de Búsqueda (<code>Search.jsx</code>)</h3>
+    <p>Algoritmo de filtrado cliente que:</p>
+    <ol>
+      <li>
+        <strong>Normaliza</strong>: Elimina acentos y mayúsculas (<code
+          >Málaga</code
+        >
+        -> <code>malaga</code>).
+      </li>
+      <li><strong>Multi-campo</strong>: Busca en Nombre, Provincia e ID.</li>
+      <li>
+        <strong>Ranking</strong>: Prioriza coincidencias exactas y por inicio de
+        palabra.
+      </li>
+    </ol>
+
+    <h3>3.6 Creación del Custom Hook (<code>useWeather.js</code>)</h3>
+    <p>
+      Para limpiar el componente principal <code>App.jsx</code> y separar la
+      lógica de la vista, se creó este hook personalizado siguiendo estos pasos:
+    </p>
+    <ol>
+      <li>
+        <strong>Encapsulamiento de Estado</strong>: Se movieron todos los
+        <code>useState</code> (<code>weatherData</code>, <code>loading</code>,
+        <code>error</code>, etc.) desde <code>App.jsx</code> al hook.
+      </li>
+      <li>
+        <strong>Lógica de Negocio</strong>: Se trasladó la función
+        <code>handleSelection</code> (que llama a la API y gestiona errores)
+        dentro del hook.
+      </li>
+      <li>
+        <strong>Exposición de API</strong>: El hook retorna un objeto con solo
+        lo necesario para la vista:
+      </li>
+    </ol>
+    <pre><code>return {
+  selectedMunicipality, // Estado del municipio actual
+  weatherData,          // Datos de AEMET
+  hourlyData,           // Datos por horas
+  loading,              // Booleano de carga
+  error,                // Mensaje de error si lo hay
+  handleSelection,      // Función para cambiar de municipio
+  clearError            // Función para limpiar errores
+};</code></pre>
+    <p>
+      De esta forma, <code>App.jsx</code> pasa de tener 100 líneas de lógica
+      compleja a simplemente llamar a
+      <code>const { ... } = useWeather();</code>.
+    </p>
+
+    <h3>3.7 Tooltips y Accesibilidad</h3>
+    <p>
+      Se ha priorizado la accesibilidad y la sencillez en la implementación de
+      tooltips:
+    </p>
+    <ol>
+      <li>
+        <strong>Nativo</strong>: Se utiliza el atributo estándar
+        <code>title</code> de HTML en los iconos y botones. Esto garantiza que
+        todos los navegadores muestren la descripción al pasar el ratón sin
+        necesidad de librerías JavaScript pesadas.
+      </li>
+      <li>
+        <strong>Lectores de Pantalla</strong>: Los iconos incluyen atributos
+        <code>aria-label</code> o textos ocultos para asegurar que las personas
+        que usan lectores de pantalla entiendan el significado de cada elemento
+        visual (ej: "Humedad", "Viento").
+      </li>
+    </ol>
+
+    <h2>4. Desafíos y Soluciones</h2>
+    <p>Durante el desarrollo, se resolvieron varios retos:</p>
+    <ul>
+      <li>
+        <strong>Codificación (Charset)</strong>: AEMET envía en
+        <code>ISO-8859-1</code>. Se implementó decodificación a
+        <code>UTF-8</code> en el Backend para corregir tildes.
+      </li>
+      <li>
+        <strong>Datos Horarios</strong>: Se creó un adaptador
+        (<code>dataAdapter.js</code>) para aplanar la estructura de AEMET y un
+        componente con scroll para visualizar 24h sin saturar.
+      </li>
+      <li>
+        <strong>API Key Segura</strong>: Se movió toda la petición a AEMET al
+        backend, usando variables de entorno <code>.env</code>, para que la
+        clave nunca llegue al navegador.
+      </li>
+    </ul>
+
+    <h2>5. Instalación</h2>
+    <ol>
+      <li>
+        <strong>Backend</strong>: <code>cd backend</code> ->
+        <code>npm install</code> -> Renombrar <code>.env.example</code> a
+        <code>.env</code> -> <code>npm run dev</code>.
+      </li>
+      <li>
+        <strong>Frontend</strong>: <code>cd frontend</code> ->
+        <code>npm install</code> -> <code>npm run dev</code>.
+      </li>
+    </ol>
+
+    <h2>6. Conclusiones</h2>
+    <p>
+      Este proyecto ha sido fundamental para comprender la arquitectura real de
+      una aplicación web moderna.
+    </p>
+
+    <p><strong>Principales aprendizajes:</strong></p>
+    <ul>
+      <li>
+        <strong>Seguridad y Arquitectura</strong>: He entendido por qué no se
+        debe llamar a APIs externas desde el cliente (exposición de claves,
+        CORS) y cómo un <strong>Backend Intermediario (Proxy)</strong> soluciona
+        estos problemas de raíz.
+      </li>
+      <li>
+        <strong>React Avanzado</strong>: La creación del Hook personalizado
+        <code>useWeather</code> me ha enseñado a separar la lógica de la
+        interfaz, haciendo que los componentes sean mucho más limpios y
+        mantenibles.
+      </li>
+      <li>
+        <strong>Manejo de Datos Reales</strong>: Los datos de AEMET no venían
+        "listos para usar" (problemas de codificación, estructuras anidadas
+        complejas). Implementar <strong>Adaptadores</strong>
+        (<code>dataAdapter.js</code>) ha sido clave para normalizar esta
+        información antes de pintarla.
+      </li>
+      <li>
+        <strong>Experiencia de Usuario</strong>: Detalles como la normalización
+        en la búsqueda (ignorar tildes) o el feedback visual de carga mejoran
+        drásticamente la percepción de calidad del software.
+      </li>
+    </ul>
+
+    <p>
+      En conclusión, la aplicación cumple con todos los requisitos funcionales y
+      técnicos, demostrando un dominio sólido de la pila React + Node.js.
+    </p>
+  </body>
+</html>
